@@ -49,19 +49,16 @@ def link_or_copy(source: Path, target: Path) -> str:
 
 
 def link_directory(source: Path, target: Path) -> str:
-    """Create a directory symlink for a companion source tree.
+    """Copy a directory tree for a companion source.
 
-    Falls back to copying if symlinks fail (e.g., in CI environments).
+    Always copies directories to avoid symlink traversal issues in MkDocs
+    and CI environments. Markdown files use symlinks when possible for true
+    single-source, but directories are always copied for robustness.
     """
     target.parent.mkdir(parents=True, exist_ok=True)
     remove_path(target)
-    relative_source = os.path.relpath(source, start=target.parent)
-    try:
-        target.symlink_to(relative_source, target_is_directory=True)
-        return "symlink-dir"
-    except OSError:
-        shutil.copytree(source, target, dirs_exist_ok=True)
-        return "copy-dir"
+    shutil.copytree(source, target, dirs_exist_ok=True)
+    return "copy-dir"
 
 
 def should_ignore(path: Path) -> bool:
