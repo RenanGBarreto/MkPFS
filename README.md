@@ -1,56 +1,74 @@
-# MkPFS
+# 📦 MkPFS: Make PFS
 
-`mkpfs` is the command-line tool for building, checking, and inspecting unsigned PFS images.
+`mkpfs` is a command-line tool for building, checking, and inspecting unsigned PlayStation PFS (PlayStation File System) images.
 
-The user guide and knowledge base now live in the MkDocs site that is being added to this repository. Use the docs pages for the current command reference, the knowledge-base menu, and the long-form PFS/PKG background material.
+> Status: pre-alpha. The core PFS workflow is actively being built out.
 
-## Quick start
+## Table of contents
 
-Install the local development environment:
+- [📦 Installation](#-installation)
+- [🧪 Usage](#-usage)
+- [✨ Examples](#-examples)
+- [🛠️ Development](#-development)
+- [🏗️ Build](#-build)
+- [📚 Documentation](#-documentation)
+
+---
+
+## 📦 Installation
+
+Install from PyPI with `uv`:
 
 ```bash
-uv sync
+uv add mkpfs
 ```
 
-Inspect the CLI help:
+Install from PyPI with `pip`:
 
 ```bash
-uv run mkpfs -h
+pip install mkpfs
 ```
 
-Build a PFS image:
+## 🧪 Usage
+
+```bash
+# Build a PFS image
+mkpfs create --path ./input --output ./output.ffpfs
+
+# Validate an image
+mkpfs check --image ./output.ffpfs
+
+# List image contents
+mkpfs ls --image ./output.ffpfs
+```
+
+Run `mkpfs --help` for the full command reference.
+
+## ✨ Examples
+
+### Inspect the CLI help
+
+```bash
+mkpfs -h
+mkpfs create -h
+```
+
+### Run from a local checkout
 
 ```bash
 uv run mkpfs create --path ./input --output ./output.ffpfs
 ```
 
-Validate an image:
+## 🛠️ Development
+
+Set up the local environment:
 
 ```bash
-uv run mkpfs check --image ./output.ffpfs
+uv sync
+uv run pre-commit install
 ```
 
-List image contents:
-
-```bash
-uv run mkpfs ls --image ./output.ffpfs
-```
-
-## Documentation workflow
-
-The docs site is rendered with MkDocs and will be published through GitHub Pages after merge to `main`.
-
-For local docs work, sync the reusable knowledge-base sources and then build or serve the site:
-
-```bash
-python scripts/sync_docs_sources.py
-uv run mkdocs build --strict
-uv run mkdocs serve
-```
-
-## Development
-
-Run the project checks with:
+Run the checks:
 
 ```bash
 uv run --frozen pytest
@@ -58,9 +76,22 @@ uv run --frozen ruff format .
 uv run --frozen ruff check .
 ```
 
-Build release artifacts with:
+For local docs work, sync the knowledge-base sources and preview the site:
+
+```bash
+python scripts/sync_docs_sources.py
+uv run mkdocs serve
+```
+
+## 🏗️ Build
+
+Build a source distribution and wheel:
 
 ```bash
 uv build
 uv run --frozen twine check dist/*
 ```
+
+## 📚 Documentation
+
+The full user guide and PFS/PKG knowledge base live in the MkDocs site published to GitHub Pages.
