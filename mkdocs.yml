@@ -1,0 +1,95 @@
+site_name: MkPFS
+site_description: Build, check, and inspect PlayStation PFS images, with a curated knowledge base.
+site_author: Renan Barreto
+repo_name: mkpfs
+repo_url: https://github.com/RenanGBarreto/mkpfs
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2026 Renan Barreto
+
+theme:
+  name: material
+  logo: assets/images/icon.png
+  favicon: assets/images/icon.png
+  font:
+    text: IBM Plex Sans
+    code: IBM Plex Mono
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.tabs.link
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light-blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: slate
+      accent: light-blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/RenanGBarreto/mkpfs
+      name: Project repository
+    - icon: fontawesome/brands/github
+      link: https://github.com/sponsors/RenanGBarreto
+      name: Sponsor the project
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - mkpfs:
+      - Getting Started: getting-started.md
+      - Commands:
+          - Overview: commands/index.md
+          - Create: commands/create.md
+          - Check: commands/check.md
+          - List: commands/ls.md
+  - Contributing:
+      - Contributing Guide: contributing.md
+      - Development Setup: development-setup.md
+  - Knowledge Base:
+      - Overview: knowledge/index.md
+      - PFS and PKG Sources:
+          - LibOrbisPkg: knowledge/sources/liborbispkg.md
+          - PkgTool: knowledge/sources/pkgtool.md
+          - ShadowMountPlus: knowledge/sources/shadowmountplus.md
+      - Source Index: knowledge/sources/other-knowledge-sources.md
+
+watch:
+  - related-projects
+  - src/mkpfs
+  - assets/images

@@ -1,0 +1,1593 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Build, check, and inspect PlayStation PFS images, with a curated knowledge base.">
+      
+      
+        <meta name="author" content="Renan Barreto">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/icon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>LibOrbisPkg Wiki — Tooling and PKG Crypto Notes - MkPFS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,300i,400,400i,700,700i%7CIBM+Plex+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"IBM Plex Sans";--md-code-font:"IBM Plex Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#liborbispkg-wiki-tooling-and-pkg-crypto-notes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MkPFS" class="md-header__button md-logo" aria-label="MkPFS" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MkPFS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LibOrbisPkg Wiki — Tooling and PKG Crypto Notes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="slate" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/RenanGBarreto/mkpfs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mkpfs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../getting-started/" class="md-tabs__link">
+          
+  
+  
+  mkpfs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../contributing/" class="md-tabs__link">
+          
+  
+  
+  Contributing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+  Knowledge Base
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MkPFS" class="md-nav__button md-logo" aria-label="MkPFS" data-md-component="logo">
+      
+  <img src="../../../assets/images/icon.png" alt="logo">
+
+    </a>
+    MkPFS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/RenanGBarreto/mkpfs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    mkpfs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    mkpfs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    mkpfs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Commands
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/create/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Create
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/check/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Check
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../commands/ls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    List
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Contributing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Knowledge Base
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Knowledge Base
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PFS and PKG Sources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    PFS and PKG Sources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../liborbispkg/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LibOrbisPkg
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pkgtool/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PkgTool
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../shadowmountplus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ShadowMountPlus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../other-knowledge-sources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Source Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-and-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope and Identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wiki-structure-and-signal-level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wiki Structure and Signal Level
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-surface-area" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Surface Area
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pkg-cryptography-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PKG Cryptography Findings
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PKG Cryptography Findings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#derived-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Derived keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pfs-key-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PFS key generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entry_keys-and-image_key-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ENTRY_KEYS and IMAGE_KEY roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fake-pkg-decryption-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fake PKG decryption conditions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication note
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pkgeditor-workflow-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PkgEditor Workflow Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PkgEditor Workflow Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-time-requirements-documented-by-the-wiki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build-time requirements documented by the wiki
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editingbuild-workflow-described-by-the-wiki" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editing/build workflow described by the wiki
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#constraints-and-unknowns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints and Unknowns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-reuse-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Reuse Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source Index
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Source Index">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upstream-wiki-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upstream wiki pages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="liborbispkg-wiki-tooling-and-pkg-crypto-notes">LibOrbisPkg Wiki — Tooling and PKG Crypto Notes<a class="headerlink" href="#liborbispkg-wiki-tooling-and-pkg-crypto-notes" title="Permanent link">&para;</a></h1>
+<ul>
+<li>Canonical source: https://github.com/maxton/LibOrbisPkg.wiki.git</li>
+<li>Canonical wiki home: https://github.com/maxton/LibOrbisPkg/wiki</li>
+<li>Local artifact folder: <a href="liborbispkg-wiki">related-projects/liborbispkg-wiki</a></li>
+<li>Indexed on: 2026-05-14</li>
+<li>Source type: wiki/docs snapshot</li>
+</ul>
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>The LibOrbisPkg wiki is a compact documentation layer for the broader LibOrbisPkg ecosystem. Its strongest technical value is not API detail but the project-level split between the reusable library and the two end-user tools, plus a concise PKG cryptography note that explains how fake PKG decryption revolves around passcode-derived keys, RSA-wrapped key material, and the <code>IMAGE_KEY</code> and <code>ENTRY_KEYS</code> records. For operational use, the wiki gives the clearest user-facing instructions for building a PKG with PkgEditor, while the PkgTool page itself is currently too sparse to stand alone.</p>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Scope and Identity</li>
+<li>Wiki Structure and Signal Level</li>
+<li>Project Surface Area</li>
+<li>PKG Cryptography Findings</li>
+<li>PkgEditor Workflow Notes</li>
+<li>Constraints and Unknowns</li>
+<li>Practical Reuse Checklist</li>
+<li>Source Index</li>
+</ol>
+<h2 id="scope-and-identity">Scope and Identity<a class="headerlink" href="#scope-and-identity" title="Permanent link">&para;</a></h2>
+<p>This reference covers the GitHub wiki pages for LibOrbisPkg, not the implementation repository itself. The wiki is documentation-oriented and small enough to treat page-by-page.</p>
+<p>Primary local pages:</p>
+<ul>
+<li><a href="Home/">related-projects/liborbispkg-wiki/Home.md</a></li>
+<li><a href="Library/">related-projects/liborbispkg-wiki/Library.md</a></li>
+<li><a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a></li>
+<li><a href="PkgEditor/">related-projects/liborbispkg-wiki/PkgEditor.md</a></li>
+<li><a href="PkgTool/">related-projects/liborbispkg-wiki/PkgTool.md</a></li>
+</ul>
+<h2 id="wiki-structure-and-signal-level">Wiki Structure and Signal Level<a class="headerlink" href="#wiki-structure-and-signal-level" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Primary value</th>
+<th>Depth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="Home/">Home.md</a></td>
+<td>Top-level map of library vs tools</td>
+<td>Light</td>
+</tr>
+<tr>
+<td><a href="Library/">Library.md</a></td>
+<td>Namespace inventory for the reusable library</td>
+<td>Light</td>
+</tr>
+<tr>
+<td><a href="PKG-Information/">PKG-Information.md</a></td>
+<td>Highest-value technical material: key derivation, PFS keys, RSA-wrapped records</td>
+<td>High</td>
+</tr>
+<tr>
+<td><a href="PkgEditor/">PkgEditor.md</a></td>
+<td>User workflow for GP4, PKG, and SFO creation/editing</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><a href="PkgTool/">PkgTool.md</a></td>
+<td>Confirms a CLI exists, but gives no usable detail beyond that</td>
+<td>Very low</td>
+</tr>
+</tbody>
+</table>
+<p>Operationally, this wiki is best treated as a companion reference:</p>
+<ul>
+<li>Start with <a href="PKG-Information/">PKG-Information.md</a> for cryptographic concepts and fake-PKG-specific handling.</li>
+<li>Use <a href="PkgEditor/">PkgEditor.md</a> for build-time requirements and GUI workflow assumptions.</li>
+<li>Use <a href="Library/">Library.md</a> only as a namespace map, not as a stable API contract.</li>
+</ul>
+<h2 id="project-surface-area">Project Surface Area<a class="headerlink" href="#project-surface-area" title="Permanent link">&para;</a></h2>
+<p>The wiki home page describes LibOrbisPkg as a C# library plus tools for creating, manipulating, and inspecting PS4 PKG files. It explicitly splits the project into three user-facing surfaces:</p>
+<ol>
+<li>The reusable library.</li>
+<li>PkgEditor, the GUI tool.</li>
+<li>PkgTool, the command-line tool.</li>
+</ol>
+<p>Source: <a href="Home/">related-projects/liborbispkg-wiki/Home.md</a></p>
+<p>The library page enumerates the namespaces that define the intended format coverage:</p>
+<table>
+<thead>
+<tr>
+<th>Namespace</th>
+<th>Documented responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LibOrbisPkg.GP4</code></td>
+<td>GP4 project handling</td>
+</tr>
+<tr>
+<td><code>LibOrbisPkg.PKG</code></td>
+<td>PKG file handling</td>
+</tr>
+<tr>
+<td><code>LibOrbisPkg.PFS</code></td>
+<td>PFS image handling</td>
+</tr>
+<tr>
+<td><code>LibOrbisPkg.PlayGo</code></td>
+<td>PlayGo <code>chunk.dat</code> and manifest handling</td>
+</tr>
+<tr>
+<td><code>LibOrbisPkg.Rif</code></td>
+<td><code>license.dat</code> and <code>license.info</code> handling</td>
+</tr>
+<tr>
+<td><code>LibOrbisPkg.SFO</code></td>
+<td>SFO file handling</td>
+</tr>
+<tr>
+<td><code>LibOrbisPkg.Util</code></td>
+<td>Crypto, keys, file I/O helpers, and related utilities</td>
+</tr>
+</tbody>
+</table>
+<p>Source: <a href="Library/">related-projects/liborbispkg-wiki/Library.md</a></p>
+<p>One explicit caveat matters for any downstream reuse: the wiki states that the API is not yet stable and is “kind of clunky.” That makes the page useful for capability discovery, but weak as a compatibility guarantee.</p>
+<h2 id="pkg-cryptography-findings">PKG Cryptography Findings<a class="headerlink" href="#pkg-cryptography-findings" title="Permanent link">&para;</a></h2>
+<p>The technically important page is <a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a>. Its claims are documentation-level rather than code-level, but they capture the key mental model the project authors used.</p>
+<h3 id="derived-keys">Derived keys<a class="headerlink" href="#derived-keys" title="Permanent link">&para;</a></h3>
+<p>The page states that PKG contents use keys derived from a developer-specified passcode plus the content ID. These are labeled <code>dk0</code> through <code>dk6</code>, produced by hashing the content ID, passcode, and an integer index with SHA-256.</p>
+<p>Documented uses:</p>
+<ul>
+<li><code>dk1</code> is the EKPFS value and is used to derive PFS encryption and signing keys.</li>
+<li><code>dk2</code> generates the AES IV/key for encrypting <code>license.info</code> in the PKG entry filesystem.</li>
+<li><code>dk3</code> generates the AES IV/key for encrypting <code>IMAGE_KEY</code>, <code>license.dat</code>, and the PKG header signature.</li>
+<li>The page explicitly says the uses of the other derived keys are not known.</li>
+</ul>
+<p>Source: <a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a></p>
+<h3 id="pfs-key-generation">PFS key generation<a class="headerlink" href="#pfs-key-generation" title="Permanent link">&para;</a></h3>
+<p>The wiki describes PFS key generation as HMAC-SHA256 over a PFS key seed plus an index, keyed by <code>dk1</code> / EKPFS:</p>
+<ul>
+<li>Index <code>1</code> generates the XTS tweak and data keys.</li>
+<li>Index <code>2</code> generates the HMAC-SHA256 signing key.</li>
+</ul>
+<p>This is the clearest direct statement in the wiki about how PKG-level secrets are converted into PFS-level keys.</p>
+<p>Source: <a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a></p>
+<h3 id="entry_keys-and-image_key-roles">ENTRY_KEYS and IMAGE_KEY roles<a class="headerlink" href="#entry_keys-and-image_key-roles" title="Permanent link">&para;</a></h3>
+<p>The wiki distinguishes two important records:</p>
+<ol>
+<li><code>ENTRY_KEYS</code></li>
+<li><code>IMAGE_KEY</code></li>
+</ol>
+<p>For <code>ENTRY_KEYS</code>, the page says six derived keys are RSA-encrypted and stored there, with their digests, while the passcode is stored in place of <code>dk0</code> and also gets its own RSA key slot. The page further notes that only public moduli are known for most of these RSA keys, except RSA key 3 where both public and private keys are known.</p>
+<p>For <code>IMAGE_KEY</code>, the page says EKPFS (<code>dk1</code>) is RSA-encrypted with the “mount-image” public key and stored in <code>IMAGE_KEY</code>, and then that entry itself is encrypted with <code>dk3</code>.</p>
+<p>Source: <a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a></p>
+<h3 id="fake-pkg-decryption-conditions">Fake PKG decryption conditions<a class="headerlink" href="#fake-pkg-decryption-conditions" title="Permanent link">&para;</a></h3>
+<p>The page provides a practical decryption summary for the PFS image inside a PKG. It states that decrypting the PFS of a PKG requires any one of the following:</p>
+<ol>
+<li>RSA key 0.</li>
+<li>RSA key 1.</li>
+<li>The mount-image RSA key.</li>
+<li>The passcode.</li>
+<li>The EKPFS.</li>
+<li>The XTS data and tweak keys.</li>
+</ol>
+<p>It also claims that items 1 through 3 would be sufficient to decrypt any PKG, while items 4 through 6 would only decrypt a specific PKG. For fake PKGs, the wiki says the mount-image key is replaced with a generated fake-PKG key, which is why PkgEditor and PkgTool can decrypt fake PKGs without needing the original passcode or license.</p>
+<p>Source: <a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a></p>
+<h3 id="authentication-note">Authentication note<a class="headerlink" href="#authentication-note" title="Permanent link">&para;</a></h3>
+<p>The page ends by stating that PKG authentication uses SHA-256, HMAC-SHA256, and RSA to detect tampering. The local snapshot does not expand that section further, so this should be treated as a high-level claim only.</p>
+<p>Source: <a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a></p>
+<h2 id="pkgeditor-workflow-notes">PkgEditor Workflow Notes<a class="headerlink" href="#pkgeditor-workflow-notes" title="Permanent link">&para;</a></h2>
+<p>The wiki's strongest operational guidance is on <a href="PkgEditor/">related-projects/liborbispkg-wiki/PkgEditor.md</a>, which outlines the intended GUI workflow for GP4-driven package creation and SFO editing.</p>
+<h3 id="build-time-requirements-documented-by-the-wiki">Build-time requirements documented by the wiki<a class="headerlink" href="#build-time-requirements-documented-by-the-wiki" title="Permanent link">&para;</a></h3>
+<ul>
+<li>PKG contents and layout are defined by GP4 project files.</li>
+<li>A content ID is required, must be exactly 36 characters, and must match the pattern <code>XXXXXX-YYYY00000_00-ZZZZZZZZZZZZZZZZ</code>.</li>
+<li>A passcode is required, though the page says that for fake PKGs it does not prevent file access.</li>
+<li>DLC packages require an entitlement key, with an all-zero default.</li>
+<li>Every PKG needs a <code>param.sfo</code> under <code>Image0/sce_sys</code>.</li>
+</ul>
+<p>Source: <a href="PkgEditor/">related-projects/liborbispkg-wiki/PkgEditor.md</a></p>
+<h3 id="editingbuild-workflow-described-by-the-wiki">Editing/build workflow described by the wiki<a class="headerlink" href="#editingbuild-workflow-described-by-the-wiki" title="Permanent link">&para;</a></h3>
+<p>The page documents these steps and assumptions:</p>
+<ol>
+<li>Create or open a GP4 project.</li>
+<li>Add folders/files through the right-side file view.</li>
+<li>Create or open an SFO file and place it under <code>Image0/sce_sys</code>.</li>
+<li>Optionally set volume timestamp and creation date behavior.</li>
+<li>Use <code>Build PKG</code> to emit the package.</li>
+</ol>
+<p>It also notes two additional user-facing behaviors:</p>
+<ul>
+<li><code>Build PFS</code> exists but is described as mainly for debugging.</li>
+<li>Opening an existing PKG allows browsing entries, opening <code>PARAM_SFO</code>, and extracting files from the Files tab.</li>
+</ul>
+<p>Source: <a href="PkgEditor/">related-projects/liborbispkg-wiki/PkgEditor.md</a></p>
+<h2 id="constraints-and-unknowns">Constraints and Unknowns<a class="headerlink" href="#constraints-and-unknowns" title="Permanent link">&para;</a></h2>
+<p>The wiki has real value, but its limits are clear:</p>
+<ol>
+<li>The library page does not document concrete class APIs or stable signatures.</li>
+<li>The cryptography page gives design notes but not field layouts or implementation references.</li>
+<li>The PkgTool page is only a placeholder sentence, so it is not sufficient for CLI behavior or argument documentation.</li>
+<li>The PKG authentication section is incomplete in the snapshot and should not be over-interpreted.</li>
+<li>Several key-usage claims are explicitly marked unknown by the wiki itself.</li>
+</ol>
+<h2 id="practical-reuse-checklist">Practical Reuse Checklist<a class="headerlink" href="#practical-reuse-checklist" title="Permanent link">&para;</a></h2>
+<p>Use this wiki effectively by treating it as a fast orientation layer:</p>
+<ol>
+<li>Read <a href="Home/">Home.md</a> to understand the library/tool split.</li>
+<li>Read <a href="Library/">Library.md</a> to map namespaces to file-format responsibilities.</li>
+<li>Read <a href="PKG-Information/">PKG-Information.md</a> for the key-derivation and fake-PKG decryption model.</li>
+<li>Read <a href="PkgEditor/">PkgEditor.md</a> for GP4, content ID, <code>param.sfo</code>, and GUI build assumptions.</li>
+<li>Do not rely on <a href="PkgTool/">PkgTool.md</a> for CLI details; inspect the implementation repository when you need exact command behavior.</li>
+</ol>
+<h2 id="source-index">Source Index<a class="headerlink" href="#source-index" title="Permanent link">&para;</a></h2>
+<h3 id="local-snapshot">Local snapshot<a class="headerlink" href="#local-snapshot" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="manifest/">related-projects/liborbispkg-wiki/manifest.md</a></li>
+<li><a href="Home/">related-projects/liborbispkg-wiki/Home.md</a></li>
+<li><a href="Library/">related-projects/liborbispkg-wiki/Library.md</a></li>
+<li><a href="PKG-Information/">related-projects/liborbispkg-wiki/PKG-Information.md</a></li>
+<li><a href="PkgEditor/">related-projects/liborbispkg-wiki/PkgEditor.md</a></li>
+<li><a href="PkgTool/">related-projects/liborbispkg-wiki/PkgTool.md</a></li>
+</ul>
+<h3 id="upstream-wiki-pages">Upstream wiki pages<a class="headerlink" href="#upstream-wiki-pages" title="Permanent link">&para;</a></h3>
+<ul>
+<li>https://github.com/maxton/LibOrbisPkg/wiki</li>
+<li>https://github.com/maxton/LibOrbisPkg/wiki/Library</li>
+<li>https://github.com/maxton/LibOrbisPkg/wiki/PKG-Information</li>
+<li>https://github.com/maxton/LibOrbisPkg/wiki/PkgEditor</li>
+<li>https://github.com/maxton/LibOrbisPkg/wiki/PkgTool</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Renan Barreto
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/RenanGBarreto/mkpfs" target="_blank" rel="noopener" title="Project repository" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://github.com/sponsors/RenanGBarreto" target="_blank" rel="noopener" title="Sponsor the project" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "content.code.copy", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

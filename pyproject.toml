@@ -34,7 +34,17 @@ Documentation = "https://github.com/RenanGBarreto/mkpfs#readme"
 packages = ["src/mkpfs"]
 
 [dependency-groups]
-dev = ["build>=1.2.2", "coverage>=7.10.6", "pre-commit>=4.2.0", "pytest>=8.4.0", "pytest-cov>=6.2.1", "ruff>=0.11.12", "twine>=6.1.0"]
+dev = [
+    "build>=1.2.2",
+    "coverage>=7.10.6",
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.14",
+    "pre-commit>=4.2.0",
+    "pytest>=8.4.0",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.11.12",
+    "twine>=6.1.0",
+]
 
 [tool.pytest.ini_options]
 junit_family = "legacy"

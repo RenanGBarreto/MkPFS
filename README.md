@@ -1,153 +1,66 @@
-# 📦 MkPFS: Make PFS
+# MkPFS
 
-`mkpfs` is a Python library for working with unsigned PFS (PlayStation File System) image files.
+`mkpfs` is the command-line tool for building, checking, and inspecting unsigned PFS images.
 
-Think of this as a lightweight, installable starting point for PFS tooling: easy to add with `uv` or `pip`, easy to inspect, and ready for the actual image/compression/checksum pipeline as the project grows.
+The user guide and knowledge base now live in the MkDocs site that is being added to this repository. Use the docs pages for the current command reference, the knowledge-base menu, and the long-form PFS/PKG background material.
 
----
+## Quick start
 
-<p align="center"> 
-  <a href="https://github.com/sponsors/RenanGBarreto" rel="noopener">
-    <img alt="Sponsor" src="https://img.shields.io/badge/Support%20the%20Project-Become%20a%20Sponsor-%23EA4AAA?style=for-the-badge&logo=github&logoColor=white" />
-  </a>
-</p>
-
-<p align="center"><strong>Help the authors to maintain the project.</strong> <br /> <a href="https://github.com/sponsors/RenanGBarreto" rel="noopener">Consider sponsoring development on GitHub Sponsors </a></p>
-
----
-
-## Table of contents
-
-- [📦 Installation](#-installation)
-- [🧪 Usage](#-usage)
-- [✨ Examples](#-examples)
-- [🛠️ Development](#-development)
-- [🏗️ Build](#-build)
-- [🔎 How it works](#-how-it-works)
-- [📄 Packaging notes](#-packaging-notes)
-
----
-
-## 📦 Installation
-
-Install from PyPI with `uv`:
-
-```bash
-uv add mkpfs
-```
-
-Install from PyPI with `pip`:
-
-```bash
-pip install mkpfs
-```
-
-Install from a local checkout while developing with `uv`:
+Install the local development environment:
 
 ```bash
 uv sync
 ```
 
-Install from a local checkout while developing with `pip`:
+Inspect the CLI help:
 
 ```bash
-pip install -e .
+uv run mkpfs -h
 ```
 
-## 🧪 Usage
-
-```python
-from mkpfs import hello
-
-print(hello())
-```
-
-Expected output:
-
-```text
-Hello from mkpfs!
-```
-
-## ✨ Examples
-
-### Minimal script
-
-```python
-from mkpfs import hello
-
-message = hello()
-print(message)
-```
-
-### Run the local demo entry point
+Build a PFS image:
 
 ```bash
-python -m mkpfs
+uv run mkpfs create --path ./input --output ./output.ffpfs
 ```
 
-## 🛠️ Development
-
-Clone the repository with all submodules, including nested submodules inside related projects:
+Validate an image:
 
 ```bash
-git clone --recurse-submodules <repository-url>
+uv run mkpfs check --image ./output.ffpfs
 ```
 
-If you already cloned the repository without submodules, initialize everything recursively:
+List image contents:
 
 ```bash
-git submodule update --init --recursive
+uv run mkpfs ls --image ./output.ffpfs
 ```
 
-Update the repository and move submodules to the latest commits on their configured default branches:
+## Documentation workflow
+
+The docs site is rendered with MkDocs and will be published through GitHub Pages after merge to `main`.
+
+For local docs work, sync the reusable knowledge-base sources and then build or serve the site:
 
 ```bash
-git pull
-git submodule update --init --recursive --remote
+python scripts/sync_docs_sources.py
+uv run mkdocs build --strict
+uv run mkdocs serve
 ```
 
-The top-level submodules are configured to track each upstream repository's default branch in `.gitmodules`.
+## Development
 
-Set up the local environment:
-
-```bash
-uv sync
-uv run pre-commit install
-```
-
-Run the checks directly:
+Run the project checks with:
 
 ```bash
 uv run --frozen pytest
 uv run --frozen ruff format .
 uv run --frozen ruff check .
-uv run --frozen ruff check . --fix
 ```
 
-## 🏗️ Build
-
-Build a source distribution and wheel:
+Build release artifacts with:
 
 ```bash
 uv build
-```
-
-Check release artifacts before publishing:
-
-```bash
 uv run --frozen twine check dist/*
 ```
-
-## 🔎 How it works
-
-- `src/mkpfs/__init__.py` exports the public API.
-- `src/mkpfs/hello.py` currently contains the only public function, `hello()`.
-- `src/mkpfs/__main__.py` is the package entry point used by `python -m mkpfs`.
-- TODO: document the real PFS image creation, compression, and checksum flow once those APIs exist.
-
-## 📄 Packaging notes
-
-- Metadata lives in `pyproject.toml`.
-- The package uses a `src/` layout.
-- Generated release artifacts stay out of version control.
-- TODO: add publishing steps once release automation exists.

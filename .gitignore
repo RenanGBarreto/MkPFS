@@ -33,6 +33,7 @@
 .netrc
 .npmrc
 .aws/
+.ruff_cache/
 
 # Related project files
 /related-projects/*

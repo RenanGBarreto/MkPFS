@@ -1,0 +1,740 @@
+
+<!DOCTYPE html>
+<html class="client-nojs" lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<title>PFS - PS4 Developer wiki</title>
+<script>(function(){var className="client-js";var cookie=document.cookie.match(/(?:^|; )psdevwiki_ps3_wiki_mwclientpreferences=([^;]+)/);if(cookie){cookie[1].split('%2C').forEach(function(pref){className=className.replace(new RegExp('(^| )'+pref.replace(/-clientpref-\w+$|[^\w-]+/g,'')+'-clientpref-\\w+( |$)'),'$1'+pref+'$2');});}document.documentElement.className=className;}());RLCONF={"wgBreakFrames":false,"wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgRequestId":"8d2a20c11ebf4ec3883f47c1","wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"PFS","wgTitle":"PFS","wgCurRevisionId":296886,"wgRevisionId":296886,"wgArticleId":39687,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["File Formats","Main"],"wgPageViewLanguage":"en","wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgRelevantPageName":"PFS","wgRelevantArticleId":39687,"wgIsProbablyEditable":true,"wgRelevantPageIsProbablyEditable":true,"wgRestrictionEdit":[],"wgRestrictionMove":[],"simpleBatchUploadMaxFilesPerBatch":{"*":1000},"wgVisualEditor":{"pageLanguageCode":"en","pageLanguageDir":"ltr","pageVariantFallbacks":"en"},"wgCiteReferencePreviewsActive":true,"wgEditSubmitButtonLabelPublish":false,"wgCheckUserClientHintsHeadersJsApi":["architecture","bitness","brands","fullVersionList","mobile","model","platform","platformVersion"]};
+RLSTATE={"site.styles":"ready","user.styles":"ready","user":"ready","user.options":"loading","ext.pygments":"ready","skins.vector.styles.legacy":"ready","ext.CookieWarning.styles":"ready","oojs-ui-core.styles":"ready","oojs-ui.styles.indicators":"ready","mediawiki.widgets.styles":"ready","oojs-ui-core.icons":"ready","ext.visualEditor.desktopArticleTarget.noscript":"ready","ext.embedVideo.styles":"ready","ext.DarkMode.styles":"ready"};RLPAGEMODULES=["ext.pygments.view","site","mediawiki.page.ready","mediawiki.toc","skins.vector.legacy.js","ext.CookieWarning","ext.visualEditor.desktopArticleTarget.init","ext.visualEditor.targetLoader","ext.embedVideo.overlay","ext.checkUser.clientHints","ext.DarkMode","ext.moderation.notify","ext.moderation.ve","ext.moderation.ajaxhook","ext.moderation.notify.desktop","ext.purge"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.impl(function(){return["user.options@12s5i",function($,jQuery,require,module){mw.user.tokens.set({"patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+}];});});</script>
+<link rel="stylesheet" href="/ps4/load.php?lang=en&amp;modules=ext.CookieWarning.styles%7Cext.DarkMode.styles%7Cext.embedVideo.styles%7Cext.pygments%7Cext.visualEditor.desktopArticleTarget.noscript%7Cmediawiki.widgets.styles%7Coojs-ui-core.icons%2Cstyles%7Coojs-ui.styles.indicators%7Cskins.vector.styles.legacy&amp;only=styles&amp;skin=vector">
+<script async="" src="/ps4/load.php?lang=en&amp;modules=startup&amp;only=scripts&amp;raw=1&amp;skin=vector"></script>
+<style>:root { --sdm-accent: gold; }</style>
+<meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="/ps4/load.php?lang=en&amp;modules=site.styles&amp;only=styles&amp;skin=vector">
+<meta name="generator" content="MediaWiki 1.43.3">
+<meta name="robots" content="max-image-preview:standard">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="Playstation Development Wiki - PS5, PS4, PS3, PS2, PS1, PSP, Vita Information">
+<meta name="viewport" content="width=device-width, initial-scale=0.5">
+<meta name="viewport" content="width=1120">
+<link rel="alternate" type="application/x-wiki" title="Edit" href="/ps4/edit/PFS">
+<link rel="search" type="application/opensearchdescription+xml" href="/ps4/rest.php/v1/search" title="PS4 Developer wiki (en)">
+<link rel="EditURI" type="application/rsd+xml" href="https://www.psdevwiki.com/ps4/api.php?action=rsd">
+<link rel="license" href="https://www.gnu.org/licenses/old-licenses/fdl-1.2.txt">
+<link rel="alternate" type="application/atom+xml" title="PS4 Developer wiki Atom feed" href="/ps4/index.php?title=Special:RecentChanges&amp;feed=atom">
+</head>
+<body class="skin-vector-legacy mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject mw-editable page-PFS rootpage-PFS skin-vector action-view"><a href="https://www.psdevwiki.com/cdn-cgi/content?id=rVo18wDZzzFlrYbK90YZl_CzwCly9KjkNwxkNsowulk-1775010773.5415583-1.0.1.1-gw5tbqZrbCt20ZaJ1tU5HIW2ZOfHC4IGtsOhvh.vEDc" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a><div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div id="content" class="mw-body" role="main">
+	<a id="top"></a>
+	<div id="siteNotice"></div>
+	<div class="mw-indicators">
+	</div>
+	<h1 id="firstHeading" class="firstHeading mw-first-heading"><span class="mw-page-title-main">PFS</span></h1>
+	<div id="bodyContent" class="vector-body">
+		<div id="siteSub" class="noprint">From PS4 Developer wiki</div>
+		<div id="contentSub"><div id="mw-content-subtitle"></div></div>
+		<div id="contentSub2"></div>
+		
+		<div id="jump-to-nav"></div>
+		<a class="mw-jump-link" href="#mw-head">Jump to navigation</a>
+		<a class="mw-jump-link" href="#searchInput">Jump to search</a>
+		<div id="mw-content-text" class="mw-body-content"><div class="mw-content-ltr mw-parser-output" lang="en" dir="ltr"><p><b>PFS</b> (Pseudo/Playstation File System) is the file system used by (at least) downloadable content and games on the PS4. It is loosely based on the <a href="https://en.wikipedia.org/wiki/UFS" class="extiw" title="wikipedia:UFS">UFS</a> (Unix File System) used in FreeBSD. PFS typically uses a 64kB block size for game data and 32kB for save data, although the block size is configurable and specified in the file system header. The minimum block size is 4kB, and the maximum is 32MiB; the block size must be a power of 2.
+</p>
+<div id="toc" class="toc" role="navigation" aria-labelledby="mw-toc-heading"><input type="checkbox" role="button" id="toctogglecheckbox" class="toctogglecheckbox" style="display:none" /><div class="toctitle" lang="en" dir="ltr"><h2 id="mw-toc-heading">Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Structure"><span class="tocnumber">1</span> <span class="toctext">Structure</span></a>
+<ul>
+<li class="toclevel-2 tocsection-2"><a href="#Header/Superblock"><span class="tocnumber">1.1</span> <span class="toctext">Header/Superblock</span></a></li>
+<li class="toclevel-2 tocsection-3"><a href="#Inodes"><span class="tocnumber">1.2</span> <span class="toctext">Inodes</span></a></li>
+<li class="toclevel-2 tocsection-4"><a href="#Dirents"><span class="tocnumber">1.3</span> <span class="toctext">Dirents</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="#Finding_the_root"><span class="tocnumber">1.4</span> <span class="toctext">Finding the root</span></a></li>
+<li class="toclevel-2 tocsection-6"><a href="#flat_path_table"><span class="tocnumber">1.5</span> <span class="toctext">flat_path_table</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-7"><a href="#Encryption"><span class="tocnumber">2</span> <span class="toctext">Encryption</span></a></li>
+<li class="toclevel-1 tocsection-8"><a href="#Tools"><span class="tocnumber">3</span> <span class="toctext">Tools</span></a></li>
+</ul>
+</div>
+
+<h1><span class="mw-headline" id="Structure">Structure</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=1" title="Edit section: Structure" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=1" title="Edit section&#039;s source code: Structure"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h1>
+<p>There are four main sections in PFS:
+</p>
+<ul><li>Header (superblock)</li>
+<li>Inode blocks</li>
+<li>Directory blocks</li>
+<li>Data blocks</li></ul>
+<h2><span id="Header.2FSuperblock"></span><span class="mw-headline" id="Header/Superblock">Header/Superblock</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=2" title="Edit section: Header/Superblock" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=2" title="Edit section&#039;s source code: Header/Superblock"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h2>
+<table class="wikitable">
+<tbody><tr>
+<th>Offset</th>
+<th>Value</th>
+<th>Size</th>
+<th>Notes
+</th></tr>
+<tr>
+<td>0x00</td>
+<td>version</td>
+<td>0x8</td>
+<td>1 for ps4 and 2 for ps5
+</td></tr>
+<tr>
+<td>0x08</td>
+<td>format</td>
+<td>0x8</td>
+<td>Always 20130315
+</td></tr>
+<tr>
+<td>0x10</td>
+<td>id</td>
+<td>0x8</td>
+<td>
+</td></tr>
+<tr>
+<td>0x18</td>
+<td>fmode</td>
+<td>0x1</td>
+<td>
+</td></tr>
+<tr>
+<td>0x19</td>
+<td>clean</td>
+<td>0x1</td>
+<td>
+</td></tr>
+<tr>
+<td>0x1A</td>
+<td>ronly</td>
+<td>0x1</td>
+<td>If 1, this is a readonly filesystem
+</td></tr>
+<tr>
+<td>0x1B</td>
+<td>rsv</td>
+<td>0x1</td>
+<td>
+</td></tr>
+<tr>
+<td>0x1C</td>
+<td>mode</td>
+<td>0x2</td>
+<td>Bit 0 = signed/unsigned, Bit 1 = 32/64 bit inodes, Bit 2 = encrypted, Bit 3 = case insensitive
+</td></tr>
+<tr>
+<td>0x1E</td>
+<td>unknown</td>
+<td>0x2</td>
+<td>
+</td></tr>
+<tr>
+<td>0x20</td>
+<td>blocksz</td>
+<td>0x4</td>
+<td>The size of each block in the filesystem
+</td></tr>
+<tr>
+<td>0x24</td>
+<td>nbackup</td>
+<td>0x4</td>
+<td>Seems to always be 0
+</td></tr>
+<tr>
+<td>0x28</td>
+<td>nblock</td>
+<td>0x8</td>
+<td>Seems to always be 1
+</td></tr>
+<tr>
+<td>0x30</td>
+<td>ndinode</td>
+<td>0x8</td>
+<td>Number of inodes in the inode blocks
+</td></tr>
+<tr>
+<td>0x38</td>
+<td>ndblock</td>
+<td>0x8</td>
+<td>Number of data blocks
+</td></tr>
+<tr>
+<td>0x40</td>
+<td>ndinodeblock</td>
+<td>0x8</td>
+<td>Number of inode blocks
+</td></tr>
+<tr>
+<td>0x48</td>
+<td>superroot_ino</td>
+<td>0x8</td>
+<td>
+</td></tr></tbody></table>
+<div class="mw-highlight mw-highlight-lang-c mw-content-ltr" dir="ltr"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">version</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">magic</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">id</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">fmode</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">clean</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">ronly</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">rsv</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int16</span><span class="w"> </span><span class="n">mode</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int16</span><span class="w"> </span><span class="n">unk1</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">blocksz</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">nbackup</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">nblock</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">ndinode</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">ndblock</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">ndinodeblock</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">superroot_ino</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">PFS_HDR</span><span class="p">;</span>
+</pre></div>
+<h2><span class="mw-headline" id="Inodes">Inodes</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=3" title="Edit section: Inodes" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=3" title="Edit section&#039;s source code: Inodes"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>Inode table starts at the second block and continues for <tt>header.ndinodeblock</tt> blocks.
+There are only <tt>header.blocksz / sizeof(di_d32)</tt> inodes per block. (inodes will never cross a block boundary)
+</p><p>For an explanation of inodes, direct and indirect blocks, see <a href="https://en.wikipedia.org/wiki/Inode_pointer_structure" class="extiw" title="wikipedia:Inode pointer structure">inode pointer structure</a> on Wikipedia. Most PFS images from PKGs have just one direct block pointer per file, and the file's data just takes up consecutive blocks. But if there is fragmentation on the file system, you will have to follow the direct and indirect block pointers.
+</p><p>There are actually 4 types of inodes that can be used in a PFS image, and the type is determined by the low two bits of the<tt>mode</tt> field in the superblock. Most PFS images that you see, such as pfs_image.dat, will be using mode 0, which refers to non-signed 32-bit inodes.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Offset</th>
+<th>Value</th>
+<th>Size</th>
+<th>Notes
+</th></tr>
+<tr>
+<td>0x00</td>
+<td>mode</td>
+<td>0x2</td>
+<td>Inode mode (bitwise OR of flags; file=0x8000, directory=0x4000), low 9 bits are file permissions
+</td></tr>
+<tr>
+<td>0x02</td>
+<td>nlink</td>
+<td>0x2</td>
+<td>Number of links to this inode. For files, this is 1. For dirs, this is 1 plus the number of subdirectories (the <tt>..</tt> entry links to the subdir's parent, increasing its <tt>nlink</tt> count).
+</td></tr>
+<tr>
+<td>0x04</td>
+<td>flags</td>
+<td>0x4</td>
+<td>Bitfield of flags for compressed, readonly, etc.
+</td></tr>
+<tr>
+<td>0x08</td>
+<td>size</td>
+<td>0x8</td>
+<td>Size in bytes of the entity
+</td></tr>
+<tr>
+<td>0x10</td>
+<td>size_compressed</td>
+<td>0x8</td>
+<td>same as <tt>size</tt> for uncompressed PFS
+</td></tr>
+<tr>
+<td>0x18</td>
+<td>times</td>
+<td>0x30</td>
+<td>Four 64-bit unix timestamps, followed by four 32-bit zeroes, which may be nanoseconds.
+</td></tr>
+<tr>
+<td>0x48</td>
+<td>uid</td>
+<td>0x4</td>
+<td>User ID (zero for game PFS images at least)
+</td></tr>
+<tr>
+<td>0x4C</td>
+<td>gid</td>
+<td>0x4</td>
+<td>Group ID (zero for game PFS images at least)
+</td></tr>
+<tr>
+<td>0x50</td>
+<td>spare</td>
+<td>0x10</td>
+<td>Probably the same as di_spare, always 0
+</td></tr>
+<tr>
+<td>0x60</td>
+<td>blocks</td>
+<td>0x4</td>
+<td>Number of blocks occupied
+</td></tr>
+<tr>
+<td>0x64</td>
+<td>db</td>
+<td>0x30</td>
+<td>Direct blocks
+</td></tr>
+<tr>
+<td>0x94</td>
+<td>ib</td>
+<td>0x14</td>
+<td>Indirect blocks
+</td></tr></tbody></table>
+<div class="mw-highlight mw-highlight-lang-c mw-content-ltr" dir="ltr"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// bitfields are from LSB to MSB</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">o_exec</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">o_write</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">o_read</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">g_exec</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">g_write</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">g_read</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">u_exec</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">u_write</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">u_read</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">unk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">dir</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint16</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="n">mode</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint16</span><span class="w"> </span><span class="n">nlink</span><span class="p">;</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">uint</span><span class="w"> </span><span class="n">compressed</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint</span><span class="w"> </span><span class="n">unk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint</span><span class="w"> </span><span class="n">readonly</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint</span><span class="w"> </span><span class="n">unk2</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">12</span><span class="p">;</span>
+<span class="w">        </span><span class="n">uint</span><span class="w"> </span><span class="n">internal</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="n">flags</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint64</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint64</span><span class="w"> </span><span class="n">size_compressed</span><span class="p">;</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">        </span><span class="n">uint64</span><span class="w"> </span><span class="n">unix_time</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="w">        </span><span class="n">uint32</span><span class="w"> </span><span class="n">time_nsec</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="n">times</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">uid</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">gid</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint64</span><span class="w"> </span><span class="n">spare</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">blocks</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">db</span><span class="p">[</span><span class="mi">12</span><span class="p">];</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">ib</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span><span class="n">di_d32</span><span class="p">;</span>
+</pre></div>
+<h2><span class="mw-headline" id="Dirents">Dirents</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=4" title="Edit section: Dirents" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=4" title="Edit section&#039;s source code: Dirents"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>Each inode with a the <tt>mode.dir</tt> bit set (<tt>mode |= 0x4000</tt>) points to block(s) of dirents. Dirents contain the name and type of files, directories, symlinks, etc. Each directory will have an associated dirent block containing at least the '.' and '..' special files, along with all other files and sub-directories in that directory. Dirents are 8-byte aligned. The <tt>entsize</tt> value will say the total length of this dirent. There is typically padding after <tt>name</tt> which can just be skipped.
+</p><p>If the type of the dirent is 3, it is a directory. Its <tt>ino</tt> value indicates the inode number (0 being the first inode). That inode will point to the dirent block for that directory so you can continue down the file system tree.
+</p><p>If the type of the dirent is 2, it is a file. Its inode will point you to the location(s) of the file data.
+</p>
+<table class="wikitable">
+<tbody><tr>
+<th>Offset</th>
+<th>Value</th>
+<th>Size</th>
+<th>Notes
+</th></tr>
+<tr>
+<td>0x00</td>
+<td>ino</td>
+<td>0x4</td>
+<td>Inode index
+</td></tr>
+<tr>
+<td>0x04</td>
+<td>type</td>
+<td>0x4</td>
+<td>Type of entry. 2=file, 3=directory, 4= . (link to current dir) , 5= .. (link to parent)
+</td></tr>
+<tr>
+<td>0x08</td>
+<td>namelen</td>
+<td>0x4</td>
+<td>Length of filename (add 1 for 0-terminator)
+</td></tr>
+<tr>
+<td>0x0C</td>
+<td>entsize</td>
+<td>0x4</td>
+<td>Size of this whole struct, in bytes
+</td></tr>
+<tr>
+<td>0x10</td>
+<td>name</td>
+<td>namelen + 1</td>
+<td>Filename and 0-terminator
+</td></tr>
+<tr>
+<td>0x11 + namelen</td>
+<td>padding</td>
+<td>variable</td>
+<td>Padding so this structure is exactly <tt>entsize</tt> bytes.
+</td></tr></tbody></table>
+<div class="mw-highlight mw-highlight-lang-c mw-content-ltr" dir="ltr"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">ino</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">type</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">namelen</span><span class="p">;</span>
+<span class="w">    </span><span class="n">int32</span><span class="w"> </span><span class="n">entsize</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">name</span><span class="p">[</span><span class="n">namelen</span><span class="o">+</span><span class="mi">1</span><span class="p">];</span>
+<span class="p">}</span><span class="w"> </span><span class="n">dirent</span><span class="p">;</span>
+</pre></div>
+<h2><span class="mw-headline" id="Finding_the_root">Finding the root</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=5" title="Edit section: Finding the root" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=5" title="Edit section&#039;s source code: Finding the root"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>The filesystem tree starts with the superroot, a sort of meta-directory that contains the root directory within it, along with something called a "flat_path_table". The superroot's inode is typically the first (zeroeth) inode entry in the table, but you should check <tt>PFS_HDR.superroot_ino</tt> for the actual index. The true root of the filesystem is the "uroot" directory within the super root.
+</p>
+<h2><span class="mw-headline" id="flat_path_table">flat_path_table</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=6" title="Edit section: flat_path_table" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=6" title="Edit section&#039;s source code: flat_path_table"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h2>
+<p>The flat_path_table is a file located above the root directory on every PFS image. It is simply a mapping of filename hashes to inode number, to increase the lookup speed for files:
+</p>
+<div class="mw-highlight mw-highlight-lang-c mw-content-ltr" dir="ltr"><pre><span></span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">filename_hash</span><span class="p">;</span>
+<span class="w">    </span><span class="n">uint32</span><span class="w"> </span><span class="n">inode</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">path_table_entry</span><span class="p">;</span>
+</pre></div>
+<p>The hashes are sorted in ascending order in the file. The hash function is given below:
+</p>
+<div class="mw-highlight mw-highlight-lang-c mw-content-ltr" dir="ltr"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">fptbl_hash</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">filename</span><span class="p">){</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="n">i</span><span class="p">];</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// convert character to uppercase</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">filename</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="p">(</span><span class="n">filename</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">filename</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">    </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">31</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">hash</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">hash</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p><a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.google.com/patents/EP2878348A1?cl=en">Patent explaining the flat path table</a>
+</p>
+<h1><span class="mw-headline" id="Encryption">Encryption</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=7" title="Edit section: Encryption" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=7" title="Edit section&#039;s source code: Encryption"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h1>
+<p>Encrypted PFS images use XTS-AES-128 encryption using a data and tweak key derived from the PKG file's image key entry (for game data) or derived from the <a href="/ps4/Sealedkey_/_pfsSKKey" title="Sealedkey / pfsSKKey">PFS Sealed Key</a> (for save data). Encryption begins at the second block in the PFS image based on the block size defined in the header. (TODO: verify)
+</p>
+<h1><span class="mw-headline" id="Tools">Tools</span><span class="mw-editsection"><span class="mw-editsection-bracket">[</span><a href="/ps4/index.php?title=PFS&amp;veaction=edit&amp;section=8" title="Edit section: Tools" class="mw-editsection-visualeditor"><span>edit</span></a><span class="mw-editsection-divider"> | </span><a href="/ps4/edit/PFS?section=8" title="Edit section&#039;s source code: Tools"><span>edit source</span></a><span class="mw-editsection-bracket">]</span></span></h1>
+<p>See <a href="/ps4/PKG#Tools" class="mw-redirect" title="PKG">PKG#Tools</a>.
+</p>
+<table class="navbox" cellspacing="0" style=";"><tbody><tr><td style="padding:2px;"><table cellspacing="0" class="nowraplinks collapsible uncollapsed" style="width:100%;background:transparent;color:inherit;;"><tbody><tr><th scope="col" style=";" class="navbox-title" colspan="3"><div class="noprint plainlinks hlist navbar" style=""><ul><li class="nv-view"><a href="/ps4/Template:File_Formats" title="Template:File Formats"><span style=";;background:none transparent;border:none;" title="View this template">v</span></a></li><li class="nv-edit"><a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://www.psdevwiki.com/ps4/edit/Template:File_Formats"><span style=";;background:none transparent;border:none;" title="Edit this template">e</span></a></li></ul></div><div class="" style="font-size:110%;">
+<a href="/ps4/File_Formats" title="File Formats">File Formats</a></div></th></tr><tr style="height:2px;"><td></td></tr><tr><th scope="row" class="navbox-group" style=";;">Files</th><td style="text-align:left;border-left-width:2px;border-left-style:solid;width:100%;padding:0px;;;" class="navbox-list navbox-odd hlist"><div style="padding:0em 0.25em">
+</div><table cellspacing="0" class="nowraplinks navbox-subgroup" style="width:100%;;;;"><tbody><tr><th scope="row" class="navbox-group" style=";padding-left:0em;padding-right:0em;;"><div style="padding:0em 0.75em;"><a href="/ps4/Content_Information_Files" title="Content Information Files">Content Information</a></div></th><td style="text-align:left;border-left-width:2px;border-left-style:solid;width:100%;padding:0px;;;" class="navbox-list navbox-"><div style="padding:">
+<a href="/ps4/Changeinfo.xml" title="Changeinfo.xml">changeinfo.xml</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Icon0.png#Still_Image_icon" title="Icon0.png">icon0.png</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160; <a href="/ps4/Pic0.png" title="Pic0.png">pic0.png </a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Pic1.png" title="Pic1.png">pic1.png</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160; <a href="/ps4/Param.sfo" title="Param.sfo">param.sfo</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Pronunciation.xml" title="Pronunciation.xml">pronunciation.xml</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Pronunciation.sig" title="Pronunciation.sig">pronunciation.sig</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Snd0.at9" title="Snd0.at9">snd0.at9</a></div></td></tr><tr style="height:2px"><td></td></tr><tr><th scope="row" class="navbox-group" style=";padding-left:0em;padding-right:0em;;"><div style="padding:0em 0.75em;"><a href="/ps4/PlayGo" title="PlayGo">PlayGo</a></div></th><td style="text-align:left;border-left-width:2px;border-left-style:solid;width:100%;padding:0px;;;" class="navbox-list navbox-"><div style="padding:">
+<a href="/ps4/Playgo-chunk.dat" title="Playgo-chunk.dat">playgo-chunk.dat</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Playgo-chunk.sha" title="Playgo-chunk.sha">playgo-chunk.sha</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Playgo-manifest.xml" title="Playgo-manifest.xml">playgo-manifest.xml</a></div></td></tr><tr style="height:2px"><td></td></tr><tr><th scope="row" class="navbox-group" style=";padding-left:0em;padding-right:0em;;"><div style="padding:0em 0.75em;"><a href="/ps4/Save_Data" title="Save Data">Save Data</a></div></th><td style="text-align:left;border-left-width:2px;border-left-style:solid;width:100%;padding:0px;;;" class="navbox-list navbox-"><div style="padding:">
+<a href="/ps4/Icon0.png#Save_Data_icon" title="Icon0.png">icon0.png</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Param.sfo" title="Param.sfo">param.sfo</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Keystone" title="Keystone">Keystone</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Sealedkey_/_pfsSKKey" title="Sealedkey / pfsSKKey">Sealedkey / pfsSKKey</a></div></td></tr><tr style="height:2px"><td></td></tr><tr><th scope="row" class="navbox-group" style=";padding-left:0em;padding-right:0em;;"><div style="padding:0em 0.75em;"><a href="/ps4/Trophy" title="Trophy">Trophy</a></div></th><td style="text-align:left;border-left-width:2px;border-left-style:solid;width:100%;padding:0px;;;" class="navbox-list navbox-"><div style="padding:">
+<a href="/ps4/Trophy00.trp" title="Trophy00.trp">trophy00.trp</a></div></td></tr><tr style="height:2px"><td></td></tr><tr><th scope="row" class="navbox-group" style=";padding-left:0em;padding-right:0em;;"><div style="padding:0em 0.75em;">Other</div></th><td style="text-align:left;border-left-width:2px;border-left-style:solid;width:100%;padding:0px;;;" class="navbox-list navbox-"><div style="padding:">
+<a href="/ps4/Activation_File" title="Activation File">Activation File</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Entitlement.db" title="Entitlement.db">entitlement.db</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/App.pkg" title="App.pkg">app.pkg</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/App.pbm" title="App.pbm">app.pbm</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Archive.dat" title="Archive.dat">archive.dat</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/JSON_Files" title="JSON Files">JSON Files</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/License.dat" title="License.dat">license.dat</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/License.info" title="License.info">license.info</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Nptitle.dat" title="Nptitle.dat">nptitle.dat</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/edit/Npbind.dat?redlink=1" class="new" title="Npbind.dat (page does not exist)">npbind.dat</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a class="mw-selflink selflink">PFS</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/PKG_files" title="PKG files">PKG files</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Delta_Package_File" title="Delta Package File">Delta Package File</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/PSARC_Archives" title="PSARC Archives">PSARC Archives</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Rights_Information_Files" title="Rights Information Files">Rights Information Files</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Envelope_Files" title="Envelope Files">Envelope Files</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Screenshots" title="Screenshots">Screenshots</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/SELF_-_SPRX" title="SELF - SPRX">SELF - SPRX</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Program_Type" title="Program Type">Program Type</a></div></td></tr></tbody></table><div></div></td><td class="navbox-image" style="width:0%;padding:0px 0px 0px 2px;" rowspan="3"><div>
+<span typeof="mw:File"><span><img alt="" src="/ps4/images/thumb/7/7d/Main_formats.png/50px-Main_formats.png" decoding="async" width="50" height="50" class="mw-file-element" srcset="/ps4/images/thumb/7/7d/Main_formats.png/75px-Main_formats.png 1.5x, /ps4/images/7/7d/Main_formats.png 2x" /></span></span></div></td></tr><tr style="height:2px"><td></td></tr><tr><th scope="row" class="navbox-group" style=";;"><a href="/ps4/IDs_%2B_labels" title="IDs + labels">IDs + labels</a></th><td style="text-align:left;border-left-width:2px;border-left-style:solid;width:100%;padding:0px;;;" class="navbox-list navbox-odd hlist"><div style="padding:0em 0.25em">
+<a href="/ps4/Category_ID" title="Category ID">Category ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Category_ID_Label" title="Category ID Label">Category ID Label</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Client_ID" title="Client ID">Client ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Client_Secret" title="Client Secret">Client Secret</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Console_ID" title="Console ID">Console ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160; <a href="/ps4/Content_ID" title="Content ID">Content ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Entitlement_ID" title="Entitlement ID">Entitlement ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Entitlement_Label" title="Entitlement Label">Entitlement Label</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/NP_Communication_ID" title="NP Communication ID">NP Communication ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/NP_Communication_Passphrase" title="NP Communication Passphrase">NP Communication Passphrase</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/NP_Communication_Signature" title="NP Communication Signature">NP Communication Signature</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/NP_OnlineID" title="NP OnlineID">NP OnlineID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/NP_Service_Label" title="NP Service Label">NP Service Label</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/NP_Title_ID" title="NP Title ID">NP Title ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/NP_Title_Secret" title="NP Title Secret">NP Title Secret</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Product_ID" title="Product ID">Product ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Product_Label" title="Product Label">Product Label</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Productcode" title="Productcode">Productcode</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Service_Entitlement_ID" title="Service Entitlement ID">Service Entitlement ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Service_Entitlement_Label" title="Service Entitlement Label">Service Entitlement Label</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Publisher_ID" title="Publisher ID">Publisher ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Service_ID" title="Service ID">Service ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/SKU_ID" title="SKU ID">SKU ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/SKU_Label" title="SKU Label">SKU Label</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Slot_ID" title="Slot ID">Slot ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/User_ID" title="User ID">User ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Product_Code" title="Product Code">Product Code</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Program_Authority_ID" title="Program Authority ID">Program Authority ID</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Auth_Info" title="Auth Info">Auth Info</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Codenames" title="Codenames">Codenames</a>&#160;&#32;<span style="font-weight:bold;">&#183;</span>&#32;&#160;<a href="/ps4/Serial_Database" title="Serial Database">Serial Database</a></div></td></tr></tbody></table></td></tr></tbody></table>
+<!-- 
+NewPP limit report
+Cached time: 20260319225452
+Cache expiry: 2592000
+Reduced expiry: false
+Complications: [show‐toc]
+CPU time usage: 0.099 seconds
+Real time usage: 1.076 seconds
+Preprocessor visited node count: 1002/1000000
+Post‐expand include size: 47045/2097152 bytes
+Template argument size: 31601/2097152 bytes
+Highest expansion depth: 14/100
+Expensive parser function count: 5/100
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 14469/5000000 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+106.96%   29.476      2 Template:Navbox
+100.00%   27.559      1 Template:File_Formats
+100.00%   27.559      1 -total
+ 30.30%    8.349      1 Template:Navbox_subgroup
+ 12.44%    3.427      1 Template:Navbar
+  6.87%    1.894     60 Template:Widedot
+  4.83%    1.330      2 Template:Transclude
+-->
+
+<!-- Saved in parser cache with key psdevwiki_ps4:pcache:idhash:39687-0!canonical and timestamp 20260319225451 and revision id 296886. Rendering was triggered because: edit-page
+ -->
+</div>
+<div class="printfooter" data-nosnippet="">Retrieved from "<a dir="ltr" href="https://www.psdevwiki.com/ps4/index.php?title=PFS&amp;oldid=296886">https://www.psdevwiki.com/ps4/index.php?title=PFS&amp;oldid=296886</a>"</div></div>
+		<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/ps4/Special:Categories" title="Special:Categories">Categories</a>: <ul><li><a href="/ps4/Category:File_Formats" title="Category:File Formats">File Formats</a></li><li><a href="/ps4/Category:Main" title="Category:Main">Main</a></li></ul></div></div>
+	</div>
+</div>
+<div id='mw-data-after-content'>
+	<div class="gas-bottom"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle gas-bottom-first"
+            style="display:table; width:728px; height:90px; margin:1em auto; clear:both;"
+            data-ad-client="ca-pub-9015332520988458"
+            data-ad-slot="7897517726"></ins><script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script></div><div class="gas-bottom"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle gas-bottom-first"
+            style="display:table; width:728px; height:90px; margin:1em auto; clear:both;"
+            data-ad-client="ca-pub-9015332520988458"
+            data-ad-slot="1931323254"></ins><script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script></div><div class="mw-cookiewarning-container"><div class="mw-cookiewarning-text"><span>Cookies help us deliver our services. By using our services, you agree to our use of cookies.</span></div><form method="POST"><div class='oo-ui-layout oo-ui-horizontalLayout'><span class='oo-ui-widget oo-ui-widget-enabled oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-progressive oo-ui-buttonWidget'><a role='button' tabindex='0' href='https://www.psdevwiki.com/ps3/PS3_Developer_wiki:Privacy_policy' rel='nofollow' class='oo-ui-buttonElement-button'><span class='oo-ui-iconElement-icon oo-ui-iconElement-noIcon oo-ui-image-progressive'></span><span class='oo-ui-labelElement-label'>More information</span><span class='oo-ui-indicatorElement-indicator oo-ui-indicatorElement-noIndicator oo-ui-image-progressive'></span></a></span><span class='oo-ui-widget oo-ui-widget-enabled oo-ui-inputWidget oo-ui-buttonElement oo-ui-buttonElement-framed oo-ui-labelElement oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive oo-ui-buttonInputWidget'><button type='submit' tabindex='0' name='disablecookiewarning' value='OK' class='oo-ui-inputWidget-input oo-ui-buttonElement-button'><span class='oo-ui-iconElement-icon oo-ui-iconElement-noIcon oo-ui-image-invert'></span><span class='oo-ui-labelElement-label'>OK</span><span class='oo-ui-indicatorElement-indicator oo-ui-indicatorElement-noIndicator oo-ui-image-invert'></span></button></span></div></form></div>
+</div>
+
+<div id="mw-navigation">
+	<h2>Navigation menu</h2>
+	<div id="mw-head">
+		
+<nav id="p-personal" class="mw-portlet mw-portlet-personal vector-user-menu-legacy vector-menu" aria-labelledby="p-personal-label"  >
+	<h3
+		id="p-personal-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Personal tools</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="pt-anonuserpage" class="mw-list-item"><span title="The user page for the IP address you are editing as">Not logged in</span></li><li id="pt-anontalk" class="mw-list-item"><a href="/ps4/Special:MyTalk" title="Discussion about edits from this IP address [n]" accesskey="n"><span>Talk</span></a></li><li id="pt-darkmode" class="mw-list-item"><a href="#" class="ext-darkmode-link"><span>Dark mode (beta)</span></a></li><li id="pt-anoncontribs" class="mw-list-item"><a href="/ps4/Special:MyContributions" title="A list of edits made from this IP address [y]" accesskey="y"><span>Contributions</span></a></li><li id="pt-createaccount" class="mw-list-item"><a href="/ps4/index.php?title=Special:CreateAccount&amp;returnto=PFS" title="You are encouraged to create an account and log in; however, it is not mandatory"><span>Create account</span></a></li><li id="pt-login" class="mw-list-item"><a href="/ps4/index.php?title=Special:UserLogin&amp;returnto=PFS" title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o"><span>Log in</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+		<div id="left-navigation">
+			
+<nav id="p-namespaces" class="mw-portlet mw-portlet-namespaces vector-menu-tabs vector-menu-tabs-legacy vector-menu" aria-labelledby="p-namespaces-label"  >
+	<h3
+		id="p-namespaces-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Namespaces</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-nstab-main" class="selected mw-list-item"><a href="/ps4/PFS" title="View the content page [c]" accesskey="c"><span>Page</span></a></li><li id="ca-talk" class="new mw-list-item"><a href="/ps4/edit/Talk:PFS?redlink=1" rel="discussion" class="new" title="Discussion about the content page (page does not exist) [t]" accesskey="t"><span>Discussion</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+			
+<nav id="p-variants" class="mw-portlet mw-portlet-variants emptyPortlet vector-menu-dropdown vector-menu" aria-labelledby="p-variants-label"  >
+	<input type="checkbox"
+		id="p-variants-checkbox"
+		role="button"
+		aria-haspopup="true"
+		data-event-name="ui.dropdown-p-variants"
+		class="vector-menu-checkbox"
+		aria-labelledby="p-variants-label"
+	>
+	<label
+		id="p-variants-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">English</span>
+	</label>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			
+		</ul>
+		
+	</div>
+</nav>
+
+		</div>
+		<div id="right-navigation">
+			
+<nav id="p-views" class="mw-portlet mw-portlet-views vector-menu-tabs vector-menu-tabs-legacy vector-menu" aria-labelledby="p-views-label"  >
+	<h3
+		id="p-views-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Views</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-view" class="selected mw-list-item"><a href="/ps4/PFS"><span>Read</span></a></li><li id="ca-ve-edit" class="mw-list-item"><a href="/ps4/index.php?title=PFS&amp;veaction=edit" title="Edit this page [v]" accesskey="v"><span>Edit</span></a></li><li id="ca-edit" class="collapsible mw-list-item"><a href="/ps4/edit/PFS" title="Edit the source code of this page [e]" accesskey="e"><span>Edit source</span></a></li><li id="ca-history" class="mw-list-item"><a href="/ps4/history/PFS" title="Past revisions of this page [h]" accesskey="h"><span>View history</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+			
+<nav id="p-cactions" class="mw-portlet mw-portlet-cactions vector-menu-dropdown vector-menu" aria-labelledby="p-cactions-label"  title="More options" >
+	<input type="checkbox"
+		id="p-cactions-checkbox"
+		role="button"
+		aria-haspopup="true"
+		data-event-name="ui.dropdown-p-cactions"
+		class="vector-menu-checkbox"
+		aria-labelledby="p-cactions-label"
+	>
+	<label
+		id="p-cactions-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">More</span>
+	</label>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="ca-purge" class="mw-list-item"><a href="#"><span>Purge</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+			
+<div id="p-search" role="search" class="vector-search-box-vue  vector-search-box-show-thumbnail vector-search-box-auto-expand-width vector-search-box">
+	<h3 >Search</h3>
+	<form action="/ps4/index.php" id="searchform" class="vector-search-box-form">
+		<div id="simpleSearch"
+			class="vector-search-box-inner"
+			 data-search-loc="header-navigation">
+			<input class="vector-search-box-input"
+				 type="search" name="search" placeholder="Search PS4 Developer wiki" aria-label="Search PS4 Developer wiki" autocapitalize="sentences" title="Search PS4 Developer wiki [f]" accesskey="f" id="searchInput"
+			>
+			<input type="hidden" name="title" value="Special:Search">
+			<input id="mw-searchButton"
+				 class="searchButton mw-fallbackSearchButton" type="submit" name="fulltext" title="Search the pages for this text" value="Search">
+			<input id="searchButton"
+				 class="searchButton" type="submit" name="go" title="Go to a page with this exact name if it exists" value="Go">
+		</div>
+	</form>
+</div>
+
+		</div>
+	</div>
+	
+<div id="mw-panel" class="vector-legacy-sidebar">
+	<div id="p-logo" role="banner">
+		<a class="mw-wiki-logo" href="/ps4/Main_Page"
+			title="Visit the main page"></a>
+	</div>
+	
+<nav id="p-PlayStation_Devwikis" class="mw-portlet mw-portlet-PlayStation_Devwikis vector-menu-portal portal vector-menu" aria-labelledby="p-PlayStation_Devwikis-label"  >
+	<h3
+		id="p-PlayStation_Devwikis-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">PlayStation Devwikis</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-Home" class="mw-list-item"><a href="https://www.psdevwiki.com" rel="nofollow" target="_blank"><span>Home</span></a></li><li id="n-PS1-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/ps1/" rel="nofollow" target="_blank"><span>PS1 Dev Wiki</span></a></li><li id="n-PS2-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/ps2/" rel="nofollow" target="_blank"><span>PS2 Dev Wiki</span></a></li><li id="n-PS3-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/ps3/" rel="nofollow" target="_blank"><span>PS3 Dev Wiki</span></a></li><li id="n-PS4-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/ps4/" rel="nofollow" target="_blank"><span>PS4 Dev Wiki</span></a></li><li id="n-PS5-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/ps5/" rel="nofollow" target="_blank"><span>PS5 Dev Wiki</span></a></li><li id="n-PSP-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/psp/" rel="nofollow" target="_blank"><span>PSP Dev Wiki</span></a></li><li id="n-Vita-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/vita/" rel="nofollow" target="_blank"><span>Vita Dev Wiki</span></a></li><li id="n-PS-Classic-Dev-Wiki" class="mw-list-item"><a href="https://www.psdevwiki.com/psclassic" rel="nofollow" target="_blank"><span>PS Classic Dev Wiki</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+	
+<nav id="p-Other_Wikis" class="mw-portlet mw-portlet-Other_Wikis vector-menu-portal portal vector-menu" aria-labelledby="p-Other_Wikis-label"  >
+	<h3
+		id="p-Other_Wikis-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Other Wikis</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-HENkaku-Dev-Wiki" class="mw-list-item"><a href="http://wiki.henkaku.xyz/" rel="nofollow" target="_blank"><span>HENkaku Dev Wiki</span></a></li><li id="n-ConsoleMods.org" class="mw-list-item"><a href="https://www.consolemods.org/wiki/Main_Page" rel="nofollow" target="_blank"><span>ConsoleMods.org</span></a></li><li id="n-TeamXLink-Wiki" class="mw-list-item"><a href="https://www.teamxlink.co.uk/wiki/Main_Page" rel="nofollow" target="_blank"><span>TeamXLink Wiki</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+<nav id="p-Discord" class="mw-portlet mw-portlet-Discord vector-menu-portal portal vector-menu" aria-labelledby="p-Discord-label"  >
+	<h3
+		id="p-Discord-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Discord</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-PlayStation-Devwiki" class="mw-list-item"><a href="https://discord.gg/K7fjFt3" rel="nofollow" target="_blank"><span>PlayStation Devwiki</span></a></li><li id="n-ConsoleMods.org" class="mw-list-item"><a href="https://discord.gg/x5vEnkR4C8" rel="nofollow" target="_blank"><span>ConsoleMods.org</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+<nav id="p-navigation" class="mw-portlet mw-portlet-navigation vector-menu-portal portal vector-menu" aria-labelledby="p-navigation-label"  >
+	<h3
+		id="p-navigation-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Navigation</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="n-mainpage-description" class="mw-list-item"><a href="/ps4/Main_Page" title="Visit the main page [z]" accesskey="z"><span>Main page</span></a></li><li id="n-portal" class="mw-list-item"><a href="/ps4/PS4_Developer_wiki:Community_portal" title="About the project, what you can do, where to find things"><span>Community portal</span></a></li><li id="n-currentevents" class="mw-list-item"><a href="/ps4/PS4_Developer_wiki:Current_events" title="Find background information on current events"><span>Current events</span></a></li><li id="n-recentchanges" class="mw-list-item"><a href="/ps4/Special:RecentChanges" title="A list of recent changes in the wiki [r]" accesskey="r"><span>Recent changes</span></a></li><li id="n-contributionscores" class="mw-list-item"><a href="/ps4/Special:ContributionScores"><span>Contribution scores</span></a></li><li id="n-randompage" class="mw-list-item"><a href="/ps4/Special:Random" title="Load a random page [x]" accesskey="x"><span>Random page</span></a></li><li id="n-All-Pages" class="mw-list-item"><a href="/ps4/Special:AllPages"><span>All Pages</span></a></li><li id="n-Staff-contacts" class="mw-list-item"><a href="https://www.psdevwiki.com/ps3/Staff_Contacts" rel="nofollow" target="_blank"><span>Staff contacts</span></a></li><li id="n-help" class="mw-list-item"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents" target="_blank" title="The place to find out"><span>Help</span></a></li>
+		</ul>
+		
+	</div>
+</nav>
+
+<nav id="p-tb" class="mw-portlet mw-portlet-tb vector-menu-portal portal vector-menu" aria-labelledby="p-tb-label"  >
+	<h3
+		id="p-tb-label"
+		
+		class="vector-menu-heading "
+	>
+		<span class="vector-menu-heading-label">Tools</span>
+	</h3>
+	<div class="vector-menu-content">
+		
+		<ul class="vector-menu-content-list">
+			
+			<li id="t-whatlinkshere" class="mw-list-item"><a href="/ps4/Special:WhatLinksHere/PFS" title="A list of all wiki pages that link here [j]" accesskey="j"><span>What links here</span></a></li><li id="t-recentchangeslinked" class="mw-list-item"><a href="/ps4/Special:RecentChangesLinked/PFS" rel="nofollow" title="Recent changes in pages linked from this page [k]" accesskey="k"><span>Related changes</span></a></li><li id="t-specialpages" class="mw-list-item"><a href="/ps4/Special:SpecialPages" title="A list of all special pages [q]" accesskey="q"><span>Special pages</span></a></li><li id="t-print" class="mw-list-item"><a href="javascript:print();" rel="alternate" title="Printable version of this page [p]" accesskey="p"><span>Printable version</span></a></li><li id="t-permalink" class="mw-list-item"><a href="/ps4/index.php?title=PFS&amp;oldid=296886" title="Permanent link to this revision of this page"><span>Permanent link</span></a></li><li id="t-info" class="mw-list-item"><a href="/ps4/index.php?title=PFS&amp;action=info" title="More information about this page"><span>Page information</span></a></li>
+		</ul>
+		<div class="after-portlet after-portlet-tb"><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<ins class="adsbygoogle"
+	     style="display:inline-block;width:160px;height:1000px;margin:20px 0 0 -20px;"
+	     data-ad-client="ca-pub-9015332520988458"
+	     data-ad-slot="1352290675"
+	</ins>
+<script>
+	(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div>
+	</div>
+</nav>
+
+	
+</div>
+
+</div>
+
+<footer id="footer" class="mw-footer" >
+	<ul id="footer-info">
+	<li id="footer-info-lastmod"> This page was last edited on 19 March 2026, at 22:54.</li>
+	<li id="footer-info-copyright">Content is available under <a class="external" rel="nofollow" href="http://www.gnu.org/licenses/old-licenses/fdl-1.2.txt">GNU Free Documentation License 1.2</a> unless otherwise noted.</li>
+</ul>
+
+	<ul id="footer-places">
+	<li id="footer-places-privacy"><a href="/ps4/PS4_Developer_wiki:Privacy_policy">Privacy policy</a></li>
+	<li id="footer-places-about"><a href="/ps4/PS4_Developer_wiki:About">About PS4 Developer wiki</a></li>
+	<li id="footer-places-disclaimers"><a href="/ps4/PS4_Developer_wiki:General_disclaimer">Disclaimers</a></li>
+</ul>
+
+	<ul id="footer-icons" class="noprint">
+	<li id="footer-copyrightico"><a href="http://www.gnu.org/licenses/old-licenses/fdl-1.2.txt" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled" target="_blank"><img src="/ps4/resources/assets/licenses/gnu-fdl.png" alt="GNU Free Documentation License 1.2" width="88" height="31" loading="lazy"></a></li>
+	<li id="footer-poweredbyico"><a href="https://www.mediawiki.org/" class="cdx-button cdx-button--fake-button cdx-button--size-large cdx-button--fake-button--enabled" target="_blank"><img src="/ps4/resources/assets/poweredby_mediawiki.svg" alt="Powered by MediaWiki" width="88" height="31" loading="lazy"></a></li>
+</ul>
+
+</footer>
+
+<script src="https://www.googletagmanager.com/gtag/js?id=G-0DGNXPL208" async=""></script><script>
+window.dataLayer = window.dataLayer || [];
+
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-0DGNXPL208', {"anonymize_ip":true});
+</script>
+
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":135,"wgPageParseReport":{"limitreport":{"cputime":"0.099","walltime":"1.076","ppvisitednodes":{"value":1002,"limit":1000000},"postexpandincludesize":{"value":47045,"limit":2097152},"templateargumentsize":{"value":31601,"limit":2097152},"expansiondepth":{"value":14,"limit":100},"expensivefunctioncount":{"value":5,"limit":100},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":14469,"limit":5000000},"timingprofile":["106.96%   29.476      2 Template:Navbox","100.00%   27.559      1 Template:File_Formats","100.00%   27.559      1 -total"," 30.30%    8.349      1 Template:Navbox_subgroup"," 12.44%    3.427      1 Template:Navbar","  6.87%    1.894     60 Template:Widedot","  4.83%    1.330      2 Template:Transclude"]},"cachereport":{"timestamp":"20260319225452","ttl":2592000,"transientcontent":false}}});});</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e542f96abfe8125',t:'MTc3NTAxMDc3Mw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<!-- Cached 20260319225957 -->
+</html>
