@@ -16,8 +16,6 @@ Think of this as a lightweight, installable starting point for PFS tooling: easy
 
 ---
 
-> Status: pre-alpha. It is intentionally small today, with the real PFS workflow still being built out.
-
 ## Table of contents
 
 - [📦 Installation](#-installation)
