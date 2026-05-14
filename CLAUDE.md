@@ -49,4 +49,14 @@ Follow these guidelines precisely.
 3. Type annotations (project preference)
    - The project targets Python 3.11: prefer built-in generic types (list, dict, tuple, set) instead of typing.List/Dict/Tuple/Set.
    - Use the `X | None` union form instead of `Optional[X]` where appropriate.
-   - Add type hints ALL variables and functions in this project.  
+   - Add type hints ALL variables and functions in this project.
+
+## GitHub CLI Tips
+
+When using `gh` command in terminal automation:
+- **Disable pager to avoid interactive prompts**: Use `GH_PAGER=cat gh <command>` to prevent pager from opening and blocking terminal execution
+- **Export logs to file**: `GH_PAGER=cat gh run view <run-id> > output.txt 2>&1` to capture full output without interactive delays
+- **Check workflow status**: `GH_PAGER=cat gh run view <run-id> --json conclusion,status` for structured status data
+- Default: `gh` commands may open `less` pager, which opens the alternate terminal buffer and blocks async execution
+- **GIT_PAGER** also opens alternate buffer — use `GIT_PAGER='' git <command>` to suppress for git commands
+- **Prefer Python subprocess** for automation that requires capturing output reliably: `subprocess.run(['gh', ...], capture_output=True, text=True, env={**os.environ, 'GH_PAGER': 'cat'})`

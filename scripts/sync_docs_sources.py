@@ -29,8 +29,12 @@ DOCUMENTED_SOURCE_DIRS = {
 
 
 def remove_path(path: Path) -> None:
-    """Remove a file or symlink if it already exists."""
-    if path.is_symlink() or path.exists():
+    """Remove a file, symlink, or directory if it already exists."""
+    if path.is_symlink():
+        path.unlink()
+    elif path.is_dir():
+        shutil.rmtree(path)
+    elif path.exists():
         path.unlink()
 
 
