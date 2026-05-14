@@ -8,7 +8,7 @@ set -euo pipefail
 uv sync
 
 # Install pre-commit hooks
-git config --unset-all core.hooksPath
+git config --unset-all core.hooksPath || true
 uv run pre-commit install --overwrite
 
 # Run formatting and linting (automatically runs on commit)
