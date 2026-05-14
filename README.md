@@ -94,4 +94,6 @@ uv run --frozen twine check dist/*
 
 ## 📚 Documentation
 
-The full user guide and PFS/PKG knowledge base live in the MkDocs site published to GitHub Pages.
+The full user guide and PFS/PKG knowledge base live in the MkDocs site published to GitHub Pages:
+
+**➡️ https://renanGBarreto.github.io/MkPFS/**
