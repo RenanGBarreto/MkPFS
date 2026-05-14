@@ -15,6 +15,8 @@ Follow these guidelines precisely.
    - Type hints required for all code
    - Follow existing patterns exactly
    - Use Google style for docstring
+   - Prefer explicit keyword arguments when calling functions or instantiating classes in Python; avoid relying on parameter ordering.
+   - All functions must include pydocs (Google style) describing what the function does, its parameters, return value(s), and any raised exceptions.
 
 3. Testing Requirements
    - Framework: `uv run --frozen pytest`
@@ -32,6 +34,7 @@ Follow these guidelines precisely.
 5. Git
    - Follow the Conventional Commits style on commit messages.
 
+
 ## Code Formatting and Linting
 
 1. Ruff
@@ -42,3 +45,8 @@ Follow these guidelines precisely.
    - Config: `.pre-commit-config.yaml`
    - Runs: on git commit
    - Tools: Ruff (Python)
+
+3. Type annotations (project preference)
+   - The project targets Python 3.11: prefer built-in generic types (list, dict, tuple, set) instead of typing.List/Dict/Tuple/Set.
+   - Use the `X | None` union form instead of `Optional[X]` where appropriate.
+   - Add type hints ALL variables and functions in this project.  

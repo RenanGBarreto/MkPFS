@@ -87,6 +87,27 @@ python -m mkpfs
 
 ## 🛠️ Development
 
+Clone the repository with all submodules, including nested submodules inside related projects:
+
+```bash
+git clone --recurse-submodules <repository-url>
+```
+
+If you already cloned the repository without submodules, initialize everything recursively:
+
+```bash
+git submodule update --init --recursive
+```
+
+Update the repository and move submodules to the latest commits on their configured default branches:
+
+```bash
+git pull
+git submodule update --init --recursive --remote
+```
+
+The top-level submodules are configured to track each upstream repository's default branch in `.gitmodules`.
+
 Set up the local environment:
 
 ```bash

@@ -36,7 +36,11 @@
 
 # Related project files
 /related-projects/*
-!/related-projects/.gitkeep
+!/related-projects/shadowmountplus
+!/related-projects/pkgtool
+!/related-projects/liborbispkg
+!/related-projects/liborbispkg-wiki
+!/related-projects/*.md
 
 # Temporary files and scratch artifacts
 /tmp/*

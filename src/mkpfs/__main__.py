@@ -1,9 +1,4 @@
-from mkpfs import hello
-
-
-def main() -> None:
-    print(hello())
-
+from mkpfs.cli import main
 
 if __name__ == "__main__":
-    main()
+    main()  # TODO waht about analyzer?
