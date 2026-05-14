@@ -1,0 +1,1 @@
+- [PyPI project guidelines](rules/pypi-project-guidelines.md) — packaging checklist, README guidance, and references for PyPI releases.
