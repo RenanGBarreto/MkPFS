@@ -19,6 +19,12 @@ ASSET_ROOT = ROOT / "assets" / "images"
 TARGET_ROOT = DOCS_ROOT / "knowledge" / "sources"
 ALLOWED_ASSET_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
 IGNORED_NAMES = {".git", ".DS_Store", "__pycache__"}
+DOCUMENTED_SOURCE_DIRS = {
+    "liborbispkg",
+    "liborbispkg-wiki",
+    "pkgtool",
+    "shadowmountplus",
+}
 
 
 def remove_path(path: Path) -> None:
@@ -73,12 +79,12 @@ def sync_knowledge_sources() -> None:
 
         target = TARGET_ROOT / source.name
         if source.is_dir():
-            mode = link_directory(source, target)
+            if source.name in DOCUMENTED_SOURCE_DIRS:
+                mode = link_directory(source, target)
+                print(f"{mode}: {target} -> {source}")
         elif source.suffix.lower() == ".md":
             mode = link_or_copy(source, target)
-        else:
-            continue
-        print(f"{mode}: {target} -> {source}")
+            print(f"{mode}: {target} -> {source}")
 
 
 def main() -> int:
