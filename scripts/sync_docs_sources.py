@@ -22,6 +22,7 @@ IGNORED_NAMES = {".git", ".DS_Store", "__pycache__"}
 DOCUMENTED_SOURCE_DIRS = {
     "liborbispkg",
     "liborbispkg-wiki",
+    "other-knowledge-sources",
     "pkgtool",
     "shadowmountplus",
 }
@@ -48,12 +49,19 @@ def link_or_copy(source: Path, target: Path) -> str:
 
 
 def link_directory(source: Path, target: Path) -> str:
-    """Create a directory symlink for a companion source tree."""
+    """Create a directory symlink for a companion source tree.
+
+    Falls back to copying if symlinks fail (e.g., in CI environments).
+    """
     target.parent.mkdir(parents=True, exist_ok=True)
     remove_path(target)
     relative_source = os.path.relpath(source, start=target.parent)
-    target.symlink_to(relative_source, target_is_directory=True)
-    return "symlink-dir"
+    try:
+        target.symlink_to(relative_source, target_is_directory=True)
+        return "symlink-dir"
+    except OSError:
+        shutil.copytree(source, target, dirs_exist_ok=True)
+        return "copy-dir"
 
 
 def should_ignore(path: Path) -> bool:
