@@ -2,9 +2,21 @@
 
 `mkpfs` is a Python library for working with unsigned PFS (PlayStation File System) image files.
 
-> Status: pre-alpha. It is intentionally small today, with the real PFS workflow still being built out.
-
 Think of this as a lightweight, installable starting point for PFS tooling: easy to add with `uv` or `pip`, easy to inspect, and ready for the actual image/compression/checksum pipeline as the project grows.
+
+---
+
+<p align="center"> 
+  <a href="https://github.com/sponsors/RenanGBarreto" rel="noopener">
+    <img alt="Sponsor" src="https://img.shields.io/badge/Support%20the%20Project-Become%20a%20Sponsor-%23EA4AAA?style=for-the-badge&logo=github&logoColor=white" />
+  </a>
+</p>
+
+<p align="center"><strong>Help the authors to maintain the project.</strong> <br /> <a href="https://github.com/sponsors/RenanGBarreto" rel="noopener">Consider sponsoring development on GitHub Sponsors </a></p>
+
+---
+
+> Status: pre-alpha. It is intentionally small today, with the real PFS workflow still being built out.
 
 ## Table of contents
 
