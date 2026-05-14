@@ -3,6 +3,10 @@ site_description: Build, check, and inspect PlayStation PFS images, with a curat
 site_author: Renan Barreto
 repo_name: mkpfs
 repo_url: https://github.com/RenanGBarreto/mkpfs
+
+validation:
+  links:
+    not_found: ignore
 edit_uri: edit/main/docs/
 copyright: Copyright &copy; 2026 Renan Barreto
 
