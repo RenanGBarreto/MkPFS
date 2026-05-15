@@ -15,7 +15,13 @@ from mkpfs.cli import (
     print_build_parameters,
     print_summary,
 )
-from mkpfs.pfs import BuildStats, ParsedDirent, PFSExtractionResult, PFSImageInfo, PFSImageInspection
+from mkpfs.pfs import (
+    BuildStats,
+    ParsedDirent,
+    PFSExtractionResult,
+    PFSImageInfo,
+    PFSImageInspection,
+)
 
 
 def test_logging_ascii_icons_env_disabled(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:

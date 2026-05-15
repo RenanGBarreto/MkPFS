@@ -31,7 +31,7 @@ Issues = "https://github.com/RenanGBarreto/mkpfs/issues"
 Documentation = "https://github.com/RenanGBarreto/mkpfs#readme"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mkpfs"]
+packages = ["mkpfs"]
 
 [dependency-groups]
 dev = [
@@ -51,7 +51,7 @@ junit_family = "legacy"
 addopts = "--cov --cov-report=term-missing --cov-report=xml --junit-xml=unit.xml"
 
 [tool.coverage.run]
-source = ["src"]
+source = ["mkpfs"]
 relative_files = true
 branch = false
 disable_warnings = ["include-ignored"]
@@ -127,7 +127,7 @@ unfixable = [ ]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"src/mkpfs/logging.py" = ["RUF001"]
+"mkpfs/logging.py" = ["RUF001"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

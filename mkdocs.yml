@@ -94,5 +94,5 @@ nav:
 
 watch:
   - related-projects
-  - src/mkpfs
+  - mkpfs
   - assets/images

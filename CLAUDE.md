@@ -19,10 +19,10 @@ Follow these guidelines precisely.
       parameter ordering.
     - All functions must include pydocs (Google style) describing what the function does, its parameters, return value(
       s), and any raised exceptions.
-    - Keep CLI wiring in `src/mkpfs/cli.py` (`build_cli`, `cmd_*`) and keep PFS format/build/inspection logic in
-      `src/mkpfs/pfs.py`.
-    - Reuse shared modules for cross-cutting concerns: constants in `src/mkpfs/consts.py`, progress and tree scan flow
-      in `src/mkpfs/pbar.py`, and utility helpers in `src/mkpfs/utils.py`.
+    - Keep CLI wiring in `mkpfs/cli.py` (`build_cli`, `cmd_*`) and keep PFS format/build/inspection logic in
+      `mkpfs/pfs.py`.
+    - Reuse shared modules for cross-cutting concerns: constants in `mkpfs/consts.py`, progress and tree scan flow
+      in `mkpfs/pbar.py`, and utility helpers in `mkpfs/utils.py`.
     - Current CLI command surface is `create`, `check` (alias `verify`), `ls`, `info`, `analyze` (alias `analyse`), and
       `extract`; keep docs aligned when changing this surface.
 

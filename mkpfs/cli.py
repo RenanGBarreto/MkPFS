@@ -1,9 +1,4 @@
-"""Command-line interface for mkpfs package.
-
-This module provides a clean CLI entry point that calls into the
-implementation in src/mkpfs/psf.py. It is kept minimal and focused on
-argument parsing and user-facing printing.
-"""
+"""Command-line interface for mkpfs package."""
 
 import argparse
 import multiprocessing as mp
