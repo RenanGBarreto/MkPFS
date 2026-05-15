@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import BinaryIO
 
 from . import consts
+from .logging import info
 from .pbar import Progress, scan_source_tree
 from .utils import _read_exact, ceil_div, human_readable_size, read_param_json
 
@@ -605,34 +606,38 @@ def build_pfs(
     dry_run: bool,
     verbose: bool,
 ) -> BuildStats:
-    start = time.time()
-    progress = Progress(enabled=True)
+    start: float = time.time()
+    progress: Progress = Progress(enabled=True)
 
     if signed and inode_bits != 32:
         raise BuildError("--signed currently supports only 32-bit inodes")
 
+    dirs: dict[str, DirNode]
+    files: dict[str, FileNode]
     dirs, files, _ = scan_source_tree(source_root, progress)
 
-    dir_nodes_sorted = sorted(dirs.values(), key=lambda d: d.rel_dir.lower())
-    file_nodes_sorted = sorted(files.values(), key=lambda f: f.rel_path.lower())
+    dir_nodes_sorted: list[DirNode] = sorted(dirs.values(), key=lambda d: d.rel_dir.lower())
+    file_nodes_sorted: list[FileNode] = sorted(files.values(), key=lambda f: f.rel_path.lower())
 
     if compress and len(file_nodes_sorted) > 0:
         # Calculate total bytes for compression progress
-        total_bytes_to_process = sum(f.raw_size for f in file_nodes_sorted)
-        worker_count = mp.cpu_count() if cpu_count == 0 else cpu_count
+        total_bytes_to_process: int = sum(f.raw_size for f in file_nodes_sorted)
+        worker_count: int = mp.cpu_count() if cpu_count == 0 else cpu_count
         progress.status(
             f"\nCompressing {len(file_nodes_sorted)} files ({human_readable_size(total_bytes_to_process)}) "
             f"using {worker_count} CPU core{'s' if worker_count != 1 else ''}..."
         )
         # Use multiprocessing for parallel compression
-        worker_args = [(f.abs_path, threshold_gain, True, block_size, zlib_level) for f in file_nodes_sorted]
-        total_bytes_processed = 0
+        worker_args: list[tuple] = [
+            (f.abs_path, threshold_gain, True, block_size, zlib_level) for f in file_nodes_sorted
+        ]
+        total_bytes_processed: int = 0
         with mp.Pool(processes=worker_count) as pool:
             results = pool.imap_unordered(_compute_file_storage_worker, worker_args)
             for idx, result in enumerate(results, start=1):
                 abs_path, payload, stored_size, is_compressed, gain_pct, hyp_comp_size = result
                 # Find the corresponding file node
-                file_node = next(f for f in file_nodes_sorted if f.abs_path == abs_path)
+                file_node: FileNode = next(f for f in file_nodes_sorted if f.abs_path == abs_path)
                 file_node.stored_payload = payload
                 file_node.stored_size = stored_size
                 file_node.compressed = is_compressed
@@ -662,7 +667,7 @@ def build_pfs(
                     "read", total_bytes_processed, total_bytes_to_process, bytes_processed=total_bytes_processed
                 )
 
-    now = int(time.time())
+    now: int = int(time.time())
     inodes: list[Inode] = []
 
     super_root_inode = Inode(
@@ -971,8 +976,11 @@ def build_pfs(
 
     if verbose:
         for f in file_nodes_sorted:
-            state = "compressed" if f.compressed else "raw"
-            print(f"[file] {f.rel_path}: raw={f.raw_size} stored={f.stored_size} gain={f.gain_pct:.2f}% mode={state}")
+            state: str = "compressed" if f.compressed else "raw"
+            info(
+                f"[file] {f.rel_path}: raw={f.raw_size} stored={f.stored_size} gain={f.gain_pct:.2f}% mode={state}",
+                icon_name="file",
+            )
 
     if dry_run:
         stats.elapsed_seconds = time.time() - start
@@ -1087,7 +1095,9 @@ def build_pfs(
         progress.status(f"Successfully wrote {human_readable_size(image_size)} image")
 
     except Exception:
-        # Clean up temp file on error
+        # Broad exception handler is used here to ensure temporary file cleanup
+        # for any failure that occurs during writing. We re-raise after cleanup
+        # so callers still see the original error.
         if tmp_path.exists():
             try:
                 tmp_path.unlink()
@@ -1160,7 +1170,7 @@ def prompt_overwrite(output_path: Path) -> bool:
     if not output_path.exists():
         return True
 
-    print(f"Output file already exists: {output_path}")
+    info(f"Output file already exists: {output_path}", icon_name="file")
     while True:
         response = input("Overwrite? [Y/n] ").strip().lower()
         if response in ["y", "yes", ""]:
@@ -1169,13 +1179,15 @@ def prompt_overwrite(output_path: Path) -> bool:
             if tmp_path.exists():
                 try:
                     tmp_path.unlink()
-                except Exception:
+                except OSError:
+                    # Ignore OS-level errors when removing temp file; caller will decide
+                    # how to proceed.
                     pass
             return True
         elif response in ["n", "no"]:
             return False
         else:
-            print("Please enter 'y' or 'n'")
+            info("Please enter 'y' or 'n'")
 
 
 @dataclass
@@ -2117,7 +2129,7 @@ def inspect_pfs_image(
     Returns:
         A detailed inspection report with parsed tree data, warnings, and errors.
     """
-    inspection = PFSImageInspection(image=image, size_bytes=_image_size_bytes(image))
+    inspection: PFSImageInspection = PFSImageInspection(image=image, size_bytes=_image_size_bytes(image))
 
     if not image.exists() or not image.is_file():
         inspection.errors.append(f"image path does not exist or is not a file: {image}")
@@ -2125,11 +2137,11 @@ def inspect_pfs_image(
 
     try:
         with image.open("rb") as fh:
-            header = parse_image_header(fh)
+            header: ParsedHeader = parse_image_header(fh)
             inspection.header = header
 
             try:
-                inodes = parse_image_inodes(fh, header)
+                inodes: list[ParsedInode] = parse_image_inodes(fh, header)
             except (OSError, ValueError) as exc:
                 inspection.errors.append(f"failed to parse inode table: {exc}")
                 return inspection
@@ -2166,8 +2178,10 @@ def inspect_pfs_image(
                     inspection.errors.append(f"failed to build filesystem tree: {exc}")
                     return inspection
 
-                case_insensitive = bool(header.mode & consts.PFS_MODE_CASE_INSENSITIVE)
-                expected_fpt = build_expected_fpt(inspection.file_inodes, inspection.dir_inodes, case_insensitive)
+                case_insensitive: bool = bool(header.mode & consts.PFS_MODE_CASE_INSENSITIVE)
+                expected_fpt: dict = build_expected_fpt(
+                    inspection.file_inodes, inspection.dir_inodes, case_insensitive
+                )
 
                 validate_fpt_maps(inspection.fpt_map, inspection.collision_map, expected_fpt, inspection.errors)
                 validate_ps5_checklist(
@@ -2285,8 +2299,8 @@ def extract_pfs_image(
     Returns:
         A structured extraction result.
     """
-    result = PFSExtractionResult(image=image, output_path=output_path, bytes_written=0)
-    inspection = inspect_pfs_image(image=image)
+    result: PFSExtractionResult = PFSExtractionResult(image=image, output_path=output_path, bytes_written=0)
+    inspection: PFSImageInspection = inspect_pfs_image(image=image)
     result.warnings.extend(inspection.warnings)
     result.errors.extend(inspection.errors)
 
@@ -2299,12 +2313,12 @@ def extract_pfs_image(
         result.errors.append(f"output path exists and is not a directory: {output_path}")
         return result
 
-    directory_targets = [
+    directory_targets: list[Path] = [
         output_path / Path(rel_dir)
         for rel_dir in sorted(inspection.dir_inodes.keys(), key=lambda value: (value.count("/"), value.lower(), value))
         if rel_dir != ""
     ]
-    file_targets = [
+    file_targets: list[tuple[str, Path, int]] = [
         (rel_path, output_path / Path(rel_path), inode_num)
         for rel_path, inode_num in sorted(inspection.file_inodes.items())
     ]
@@ -2331,9 +2345,9 @@ def extract_pfs_image(
                     directory_target.mkdir(parents=True, exist_ok=False)
                     result.directories_created += 1
 
-            total_files = len(file_targets)
+            total_files: int = len(file_targets)
             for index, (rel_path, file_target, inode_num) in enumerate(file_targets, start=1):
-                inode = inspection.inodes[inode_num]
+                inode: ParsedInode = inspection.inodes[inode_num]
                 payload = read_image_inode_payload(fh, inode, inspection.header.block_size)
                 if inode.is_compressed:
                     try:
@@ -2353,3 +2367,81 @@ def extract_pfs_image(
         result.errors.append(f"failed to extract image: {exc}")
 
     return result
+
+
+# Thin, stable wrapper APIs --------------------------------------------------
+def pfs_build(
+    source_root: Path,
+    output_path: Path,
+    block_size: int,
+    pfs_version: int,
+    inode_bits: int,
+    case_insensitive: bool,
+    signed: bool,
+    compress: bool,
+    threshold_gain: int,
+    cpu_count: int,
+    zlib_level: int,
+    dry_run: bool,
+    verbose: bool,
+) -> BuildStats:
+    """Stable thin wrapper around :func:`build_pfs`.
+
+    This wrapper exists to provide a stable, short and predictable symbol for
+    external callers that prefer the `pfs_` prefix.
+    """
+    return build_pfs(
+        source_root=source_root,
+        output_path=output_path,
+        block_size=block_size,
+        pfs_version=pfs_version,
+        inode_bits=inode_bits,
+        case_insensitive=case_insensitive,
+        signed=signed,
+        compress=compress,
+        threshold_gain=threshold_gain,
+        cpu_count=cpu_count,
+        zlib_level=zlib_level,
+        dry_run=dry_run,
+        verbose=verbose,
+    )
+
+
+def pfs_inspect(
+    image: Path,
+    source: Path | None = None,
+    expected_crc32: int | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> PFSImageInspection:
+    """Thin wrapper around :func:`inspect_pfs_image` named with `pfs_` prefix."""
+    return inspect_pfs_image(
+        image=image,
+        source=source,
+        expected_crc32=expected_crc32,
+        expected_manifest_sha256=expected_manifest_sha256,
+    )
+
+
+def pfs_read_info(image: Path) -> PFSImageInfo:
+    """Thin wrapper around :func:`read_pfs_info` named with `pfs_` prefix."""
+    return read_pfs_info(image)
+
+
+def pfs_extract(image: Path, output_path: Path, progress: Progress | None = None) -> PFSExtractionResult:
+    """Thin wrapper around :func:`extract_pfs_image` named with `pfs_` prefix."""
+    return extract_pfs_image(image=image, output_path=output_path, progress=progress)
+
+
+def pfs_verify(
+    image: Path,
+    source: Path | None = None,
+    expected_crc32: int | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> PFSImageInspection:
+    """Thin wrapper around :func:`verify_pfs_image` named with `pfs_` prefix."""
+    return verify_pfs_image(
+        image=image,
+        source=source,
+        expected_crc32=expected_crc32,
+        expected_manifest_sha256=expected_manifest_sha256,
+    )

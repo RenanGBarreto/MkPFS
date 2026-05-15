@@ -5,14 +5,12 @@ implementation in src/mkpfs/psf.py. It is kept minimal and focused on
 argument parsing and user-facing printing.
 """
 
-from __future__ import annotations
-
 import argparse
 import multiprocessing as mp
-import sys
 from pathlib import Path
 
 from . import consts
+from .logging import error, info, warn
 from .pfs import (
     BuildError,
     BuildStats,
@@ -61,75 +59,75 @@ def print_build_parameters(
     dry_run: bool,
 ) -> None:
     """Print build configuration at the start."""
-    print("\n" + "=" * 70)
-    print("PFS Image Builder - Parameters")
-    print("=" * 70)
-    mode = compose_pfs_mode_with_sign(inode_bits, case_insensitive, signed)
-    print(f"  Source path:       {source_path}")
-    print(f"  Output path:       {output_path}")
-    ver_label = "PS5" if pfs_version == consts.PFS_VERSION_PS5 else "PS4"
-    print(f"  Version:           {pfs_version} ({ver_label})")
-    fmt = globals().get("PFS_MAGIC", "")
-    print(f"  Format:            {fmt}")
-    print(f"  Block size:        {block_size:,} bytes ({block_size // 1024} KiB)")
-    print(f"  Inode width:       {inode_bits}-bit")
-    print(
+    mode: int = compose_pfs_mode_with_sign(inode_bits, case_insensitive, signed)
+    info("" + "=" * 70)
+    info("PFS Image Builder - Parameters")
+    info("" + "=" * 70)
+    info(f"  Source path:       {source_path}")
+    info(f"  Output path:       {output_path}")
+    ver_label: str = "PS5" if pfs_version == consts.PFS_VERSION_PS5 else "PS4"
+    info(f"  Version:           {pfs_version} ({ver_label})")
+    fmt: str = globals().get("PFS_MAGIC", "")
+    info(f"  Format:            {fmt}")
+    info(f"  Block size:        {block_size:,} bytes ({block_size // 1024} KiB)")
+    info(f"  Inode width:       {inode_bits}-bit")
+    info(
         f"  PFS mode:          0x{mode:04X}  (Bit 0=signed, Bit 1=64-bit inodes, "
         "Bit 2=encrypted, Bit 3=case insensitive)"
     )
-    print(f"    Signed:          {'yes' if mode & consts.PFS_MODE_SIGNED else 'no'}")
-    print(f"    64-bit inodes:   {'yes' if mode & consts.PFS_MODE_64BIT_INODES else 'no'}")
-    print(f"    Encrypted:       {'yes' if mode & consts.PFS_MODE_ENCRYPTED else 'no'}")
-    print(f"    Case insensitive: {'yes' if mode & consts.PFS_MODE_CASE_INSENSITIVE else 'no'}")
-    print(f"  Compression:       {'enabled' if compress else 'disabled'}")
+    info(f"    Signed:          {'yes' if mode & consts.PFS_MODE_SIGNED else 'no'}")
+    info(f"    64-bit inodes:   {'yes' if mode & consts.PFS_MODE_64BIT_INODES else 'no'}")
+    info(f"    Encrypted:       {'yes' if mode & consts.PFS_MODE_ENCRYPTED else 'no'}")
+    info(f"    Case insensitive: {'yes' if mode & consts.PFS_MODE_CASE_INSENSITIVE else 'no'}")
+    info(f"  Compression:       {'enabled' if compress else 'disabled'}")
     if compress:
-        print(f"  Threshold gain:    {threshold_gain}%")
-        print(f"  CPU cores:         {'all available' if cpu_count == 0 else cpu_count}")
-        print(f"  Zlib level:        {zlib_level}")
-    print(f"  Dry run:           {'yes' if dry_run else 'no'}")
-    print("=" * 70)
+        info(f"  Threshold gain:    {threshold_gain}%")
+        info(f"  CPU cores:         {'all available' if cpu_count == 0 else cpu_count}")
+        info(f"  Zlib level:        {zlib_level}")
+    info(f"  Dry run:           {'yes' if dry_run else 'no'}")
+    info("" + "=" * 70)
 
 
 def print_summary(stats: BuildStats) -> None:
-    print("\n" + "=" * 70)
-    print("Build Summary")
-    print("=" * 70)
-    print(f"  Input path:              {stats.input_path}")
-    print(f"  Output path:             {stats.output_path}")
-    print(f"  Total files:             {stats.total_files:,}")
-    print(f"  Total uncompressed size: {human_readable_size(stats.uncompressed_total_size)}")
-    print(f"  Total stored size:       {human_readable_size(stats.stored_total_size)}")
+    info("" + "=" * 70)
+    info("Build Summary")
+    info("" + "=" * 70)
+    info(f"  Input path:              {stats.input_path}")
+    info(f"  Output path:             {stats.output_path}")
+    info(f"  Total files:             {stats.total_files:,}")
+    info(f"  Total uncompressed size: {human_readable_size(stats.uncompressed_total_size)}")
+    info(f"  Total stored size:       {human_readable_size(stats.stored_total_size)}")
 
     if stats.compression_enabled:
-        print("\n  Compression Statistics:")
-        print(f"    Compressed files:       {stats.compressed_files:,}")
-        print(f"    Uncompressed files:     {stats.uncompressed_files:,}")
-        print(f"    Actual gain achieved:   {stats.actual_gain_pct:.2f}%")
-        print(
+        info("\n  Compression Statistics:")
+        info(f"    Compressed files:       {stats.compressed_files:,}")
+        info(f"    Uncompressed files:     {stats.uncompressed_files:,}")
+        info(f"    Actual gain achieved:   {stats.actual_gain_pct:.2f}%")
+        info(
             "    Max theoretical gain:   "
             f"{stats.max_possible_gain_pct:.2f}%  "
             f"({human_readable_size(stats.all_compressed_total_size)} if all files compressed)"
         )
     else:
-        print("\n  Compression:             disabled")
+        info("\n  Compression:             disabled")
 
-    aligned_total = stats.stored_total_size + stats.block_alignment_waste
-    waste_pct = (stats.block_alignment_waste / aligned_total * 100.0) if aligned_total > 0 else 0.0
-    print("\n  Block Alignment Waste:")
-    print(f"    Block size:             {stats.block_size // 1024} KiB ({stats.block_size:,} bytes)")
-    print(
+    aligned_total: int = stats.stored_total_size + stats.block_alignment_waste
+    waste_pct: float = (stats.block_alignment_waste / aligned_total * 100.0) if aligned_total > 0 else 0.0
+    info("\n  Block Alignment Waste:")
+    info(f"    Block size:             {stats.block_size // 1024} KiB ({stats.block_size:,} bytes)")
+    info(
         "    Wasted space:           "
         f"{human_readable_size(stats.block_alignment_waste)} "
         f"({waste_pct:.2f}% of file data blocks)"
     )
 
-    print(f"\n  Elapsed time:            {stats.elapsed_seconds:.2f}s")
+    info(f"\n  Elapsed time:            {stats.elapsed_seconds:.2f}s")
 
     if stats.total_files > 0:
-        throughput = stats.uncompressed_total_size / (stats.elapsed_seconds + 0.001)
-        print(f"  Throughput:              {human_readable_size(int(throughput))}/s")
+        throughput: float = stats.uncompressed_total_size / (stats.elapsed_seconds + 0.001)
+        info(f"  Throughput:              {human_readable_size(int(throughput))}/s")
 
-    print("=" * 70 + "\n")
+    info("" * 70 + "\n")
 
 
 def prompt_overwrite(output_path: Path) -> bool:
@@ -137,7 +135,7 @@ def prompt_overwrite(output_path: Path) -> bool:
     if not output_path.exists():
         return True
 
-    print(f"Output file already exists: {output_path}")
+    info(f"Output file already exists: {output_path}")
     while True:
         response = input("Overwrite? [Y/n] ").strip().lower()
         if response in ("y", "yes", ""):
@@ -146,12 +144,12 @@ def prompt_overwrite(output_path: Path) -> bool:
             if tmp_path.exists():
                 try:
                     tmp_path.unlink()
-                except Exception:
+                except OSError:
                     pass
             return True
         if response in ("n", "no"):
             return False
-        print("Please enter 'y' or 'n'")
+        info("Please enter 'y' or 'n'")
 
 
 def parse_args(argv: list | None = None) -> argparse.Namespace:
@@ -258,47 +256,47 @@ def run_image_check(
             total_stored = sum(max(0, inodes[i].size_compressed) for i in file_inodes.values())
 
             if emit_report:
-                print("=" * 70)
-                print("PFS Check Report")
-                print("=" * 70)
-                print(f"Image:                 {image}")
-                ver_label = "PS5" if header.version == consts.PFS_VERSION_PS5 else "PS4"
-                print(f"Version:               {header.version} ({ver_label})")
-                print(f"Format:                {header.magic}")
-                print(f"Read-only:             {'yes' if header.readonly else 'no'}")
-                print(
+                info("" + "=" * 70)
+                info("PFS Check Report")
+                info("" + "=" * 70)
+                info(f"Image:                 {image}")
+                ver_label: str = "PS5" if header.version == consts.PFS_VERSION_PS5 else "PS4"
+                info(f"Version:               {header.version} ({ver_label})")
+                info(f"Format:                {header.magic}")
+                info(f"Read-only:             {'yes' if header.readonly else 'no'}")
+                info(
                     "Mode:                  "
                     f"0x{header.mode:04X}  (Bit 0=signed, Bit 1=64-bit inodes, "
                     "Bit 2=encrypted, Bit 3=case insensitive)"
                 )
-                print(f"  Signed:              {'yes' if header.mode & consts.PFS_MODE_SIGNED else 'no'}")
-                print(f"  64-bit inodes:       {'yes' if header.mode & consts.PFS_MODE_64BIT_INODES else 'no'}")
-                print(f"  Encrypted:           {'yes' if header.mode & consts.PFS_MODE_ENCRYPTED else 'no'}")
-                print(f"  Case insensitive:    {'yes' if header.mode & consts.PFS_MODE_CASE_INSENSITIVE else 'no'}")
-                print(f"Block size:            {header.block_size:,} bytes")
-                print(f"Inodes:                {len(inodes):,}")
-                print(f"Directories:           {len(dir_inodes):,}")
-                print(f"Files:                 {len(file_inodes):,}")
-                print(f"Compressed files:      {compressed_count:,}")
-                print(f"Files hash-checked:    {checked_files:,}")
-                print(f"Data CRC32:            0x{data_crc32:08X}")
-                print(f"Manifest SHA256:       {manifest_sha256}")
-                print(f"Logical file bytes:    {total_logical:,}")
-                print(f"Stored file bytes:     {total_stored:,}")
-                print(f"flat_path_table keys:  {len(fpt_map):,}")
-                print(f"Warnings:              {len(warnings)}")
-                print(f"Errors:                {len(errors)}")
-                print("=" * 70)
+                info(f"  Signed:              {'yes' if header.mode & consts.PFS_MODE_SIGNED else 'no'}")
+                info(f"  64-bit inodes:       {'yes' if header.mode & consts.PFS_MODE_64BIT_INODES else 'no'}")
+                info(f"  Encrypted:           {'yes' if header.mode & consts.PFS_MODE_ENCRYPTED else 'no'}")
+                info(f"  Case insensitive:    {'yes' if header.mode & consts.PFS_MODE_CASE_INSENSITIVE else 'no'}")
+                info(f"Block size:            {header.block_size:,} bytes")
+                info(f"Inodes:                {len(inodes):,}")
+                info(f"Directories:           {len(dir_inodes):,}")
+                info(f"Files:                 {len(file_inodes):,}")
+                info(f"Compressed files:      {compressed_count:,}")
+                info(f"Files hash-checked:    {checked_files:,}")
+                info(f"Data CRC32:            0x{data_crc32:08X}")
+                info(f"Manifest SHA256:       {manifest_sha256}")
+                info(f"Logical file bytes:    {total_logical:,}")
+                info(f"Stored file bytes:     {total_stored:,}")
+                info(f"flat_path_table keys:  {len(fpt_map):,}")
+                info(f"Warnings:              {len(warnings)}")
+                info(f"Errors:                {len(errors)}")
+                info("=" * 70)
 
             if print_tree:
-                print("/")
+                info("/")
                 for line in render_tree(tree, uroot_inode):
-                    print(line)
+                    info(line)
 
     return errors, warnings, tree, uroot_inode
 
 
-def add_create_subcommand_arguments(parser: argparse.ArgumentParser) -> None:
+def cli_mkpfs_add_create_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--path", required=True, help="Source app or homebrew folder")
     parser.add_argument("--output", required=True, help="Output image path")
 
@@ -334,7 +332,7 @@ def add_create_subcommand_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def create_args_to_legacy_argv(args: argparse.Namespace) -> list[str]:
-    argv = ["--path", args.path, "--output", args.output]
+    argv: list[str] = ["--path", args.path, "--output", args.output]
     if args.no_compress:
         argv.append("--no-compress")
     else:
@@ -358,19 +356,21 @@ def create_args_to_legacy_argv(args: argparse.Namespace) -> list[str]:
     return argv
 
 
-def cmd_create(args: argparse.Namespace) -> int:
-    source_path = Path(args.path).expanduser().resolve()
+def cli_mkpfs_create_run(args: argparse.Namespace) -> int:
+    source_path: Path = Path(args.path).expanduser().resolve()
+    output_path: Path
+    output_warn: str | None
     output_path, output_warn = normalize_output_path(args.output)
     output_path = output_path.expanduser().resolve()
 
     if output_warn:
-        print(f"warning: {output_warn}", file=sys.stderr)
+        info(output_warn)
 
     if args.threshold_gain < 0 or args.threshold_gain > 100:
         raise BuildError("--threshold-gain must be within 0..100")
 
     if isinstance(args.block_size, str) and args.block_size.strip().lower() == "auto":
-        block_size = 65536
+        block_size: int = 65536
     else:
         try:
             block_size = int(args.block_size)
@@ -382,20 +382,22 @@ def cmd_create(args: argparse.Namespace) -> int:
     if block_size < 0x1000 or block_size > 0x200000:
         raise BuildError("--block-size must be between 4096 and 2097152")
 
-    available_cpu_count = mp.cpu_count()
+    available_cpu_count: int = mp.cpu_count()
     if args.cpu_count < 0 or args.cpu_count > available_cpu_count:
         raise BuildError(f"--cpu-count must be within 0..{available_cpu_count}")
 
     if args.compression_level < 0 or args.compression_level > 9:
         raise BuildError("--compression-level must be within 0..9")
 
+    _title_id: str | None
+    warnings: list[str]
     _title_id, warnings = validate_input(source_path)
     for w in warnings:
-        print(f"warning: {w}", file=sys.stderr)
+        warn(w)
 
-    compress = not args.no_compress
-    case_insensitive = args.case_insensitive or not args.case_sensitive
-    pfs_version = consts.PFS_VERSION_PS5 if args.version == "PS5" else consts.PFS_VERSION_PS4
+    compress: bool = not args.no_compress
+    case_insensitive: bool = args.case_insensitive or not args.case_sensitive
+    pfs_version: int = consts.PFS_VERSION_PS5 if args.version == "PS5" else consts.PFS_VERSION_PS4
 
     print_build_parameters(
         source_path,
@@ -413,10 +415,10 @@ def cmd_create(args: argparse.Namespace) -> int:
     )
 
     if not args.dry_run and not prompt_overwrite(output_path):
-        print("Operation cancelled.")
+        info("Operation cancelled.")
         return 0
 
-    stats = build_pfs(
+    stats: BuildStats = build_pfs(
         source_root=source_path,
         output_path=output_path,
         block_size=block_size,
@@ -436,7 +438,7 @@ def cmd_create(args: argparse.Namespace) -> int:
     if args.dry_run or not args.verify:
         return 0
 
-    print("Running post-create check...")
+    info("Running post-create check...")
     errors, warnings, _tree, _uroot = run_image_check(
         output_path,
         source_path,
@@ -444,13 +446,13 @@ def cmd_create(args: argparse.Namespace) -> int:
     )
 
     for w in warnings:
-        print(f"warning: {w}", file=sys.stderr)
+        warn(w)
     for e in errors:
-        print(f"error: {e}", file=sys.stderr)
+        error(e)
     return 1 if errors else 0
 
 
-def cmd_check(args: argparse.Namespace) -> int:
+def cli_mkpfs_check_run(args: argparse.Namespace) -> int:
     image = Path(args.image).expanduser().resolve()
     source = Path(args.source).expanduser().resolve() if args.source else None
     expected_crc32: int | None = None
@@ -459,22 +461,22 @@ def cmd_check(args: argparse.Namespace) -> int:
         if crc_text.startswith("0x"):
             crc_text = crc_text[2:]
         if len(crc_text) == 0 or len(crc_text) > 8:
-            print("error: --expected-crc32 must be a 32-bit hex value", file=sys.stderr)
+            info("--expected-crc32 must be a 32-bit hex value")
             return 2
         try:
             expected_crc32 = int(crc_text, 16)
         except ValueError:
-            print("error: --expected-crc32 must be hex (example: 7F528D1F or 0x7F528D1F)", file=sys.stderr)
+            info("--expected-crc32 must be hex (example: 7F528D1F or 0x7F528D1F)")
             return 2
         if expected_crc32 < 0 or expected_crc32 > 0xFFFFFFFF:
-            print("error: --expected-crc32 out of range", file=sys.stderr)
+            info("--expected-crc32 out of range")
             return 2
 
     expected_manifest_sha256: str | None = None
     if args.expected_manifest_sha256:
         digest = args.expected_manifest_sha256.strip().lower()
         if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
-            print("error: --expected-manifest-sha256 must be a 64-hex SHA256 digest", file=sys.stderr)
+            info("--expected-manifest-sha256 must be a 64-hex SHA256 digest")
             return 2
         expected_manifest_sha256 = digest
 
@@ -486,14 +488,18 @@ def cmd_check(args: argparse.Namespace) -> int:
         expected_manifest_sha256=expected_manifest_sha256,
     )
     for w in warnings:
-        print(f"warning: {w}", file=sys.stderr)
+        warn(w)
     for e in errors:
-        print(f"error: {e}", file=sys.stderr)
+        error(e)
     return 1 if errors else 0
 
 
-def cmd_ls(args: argparse.Namespace) -> int:
-    image = Path(args.image).expanduser().resolve()
+def cli_mkpfs_ls_run(args: argparse.Namespace) -> int:
+    image: Path = Path(args.image).expanduser().resolve()
+    errors: list[str]
+    _warnings: list[str]
+    tree: dict[int, list[ParsedDirent]]
+    uroot: int
     errors, _warnings, tree, uroot = run_image_check(
         image,
         source=None,
@@ -502,43 +508,43 @@ def cmd_ls(args: argparse.Namespace) -> int:
     )
     if errors:
         for e in errors:
-            print(f"error: {e}", file=sys.stderr)
+            error(e)
         return 1
-    print("/")
+    info("/")
     for line in render_tree(tree, uroot):
-        print(line)
+        info(line)
     return 0
 
 
-def cmd_info(args: argparse.Namespace) -> int:
+def cli_mkpfs_info_run(args: argparse.Namespace) -> int:
     """Show lightweight PFS image metadata.
 
     Args:
         args: Parsed CLI arguments with `image` attribute.
     """
     image: Path = Path(args.image).expanduser().resolve()
-    info: PFSImageInfo = read_pfs_info(image)
+    info_result: PFSImageInfo = read_pfs_info(image)
 
     # Print header-level metadata and any warnings/errors
-    print("=" * 70)
-    print("PFS Image Info")
-    print("=" * 70)
-    print(f"Image:       {image}")
-    print(f"Size (bytes):{info.size_bytes}")
-    if info.header is not None:
-        print(f"Version:     {info.version_label} ({info.header.version})")
-        print(f"Block size:  {info.header.block_size}")
-        print(f"Magic:       0x{info.header.magic:016X}")
+    info("=" * 70)
+    info("PFS Image Info")
+    info("=" * 70)
+    info(f"Image:       {image}")
+    info(f"Size (bytes):{info_result.size_bytes}")
+    if info_result.header is not None:
+        info(f"Version:     {info_result.version_label} ({info_result.header.version})")
+        info(f"Block size:  {info_result.header.block_size}")
+        info(f"Magic:       0x{info_result.header.magic:016X}")
 
-    for w in info.warnings:
-        print(f"warning: {w}", file=sys.stderr)
-    for e in info.errors:
-        print(f"error: {e}", file=sys.stderr)
+    for w in info_result.warnings:
+        warn(w)
+    for e in info_result.errors:
+        error(e)
 
-    return 1 if info.errors else 0
+    return 1 if info_result.errors else 0
 
 
-def cmd_analyze(args: argparse.Namespace) -> int:
+def cli_mkpfs_analyze_run(args: argparse.Namespace) -> int:
     """Inspect a PFS image and emit a detailed report.
 
     Args:
@@ -556,7 +562,7 @@ def cmd_analyze(args: argparse.Namespace) -> int:
         try:
             expected_crc32 = int(crc_text, 16)
         except ValueError:
-            print("error: --expected-crc32 must be hex (example: 7F528D1F or 0x7F528D1F)", file=sys.stderr)
+            info("--expected-crc32 must be hex (example: 7F528D1F or 0x7F528D1F)")
             return 2
 
     # Parse optional expected manifest digest
@@ -564,7 +570,7 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     if getattr(args, "expected_manifest_sha256", None):
         digest: str = args.expected_manifest_sha256.strip().lower()
         if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
-            print("error: --expected-manifest-sha256 must be a 64-hex SHA256 digest", file=sys.stderr)
+            info("--expected-manifest-sha256 must be a 64-hex SHA256 digest")
             return 2
         expected_manifest_sha256 = digest
 
@@ -577,32 +583,32 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     )
 
     # Emit report
-    print("=" * 70)
-    print("PFS Image Inspection")
-    print("=" * 70)
-    print(f"Image:    {image}")
+    info("=" * 70)
+    info("PFS Image Inspection")
+    info("=" * 70)
+    info(f"Image:    {image}")
     if inspection.header is not None:
         ver_label: str = "PS5" if inspection.header.version == consts.PFS_VERSION_PS5 else "PS4"
-        print(f"Version:  {inspection.header.version} ({ver_label})")
-        print(f"Block:    {inspection.header.block_size}")
+        info(f"Version:  {inspection.header.version} ({ver_label})")
+        info(f"Block:    {inspection.header.block_size}")
 
-    print(f"Warnings: {len(inspection.warnings)}")
-    print(f"Errors:   {len(inspection.errors)}")
+    info(f"Warnings: {len(inspection.warnings)}")
+    info(f"Errors:   {len(inspection.errors)}")
 
     for w in inspection.warnings:
-        print(f"warning: {w}", file=sys.stderr)
+        info(w)
     for e in inspection.errors:
-        print(f"error: {e}", file=sys.stderr)
+        info(e)
 
     if getattr(args, "print_tree", False) and inspection.has_tree:
-        print("/")
+        info("/")
         for line in render_tree(inspection.dirents_by_inode, inspection.uroot_inode):
-            print(line)
+            info(line)
 
     return 1 if inspection.errors else 0
 
 
-def cmd_extract(args: argparse.Namespace) -> int:
+def cli_mkpfs_extract_run(args: argparse.Namespace) -> int:
     """Extract all files from a PFS image into a directory.
 
     Args:
@@ -612,25 +618,25 @@ def cmd_extract(args: argparse.Namespace) -> int:
     output_path: Path = Path(args.output).expanduser().resolve()
 
     if output_path.exists() and not args.overwrite:
-        print(f"error: output path {output_path} exists (use --overwrite to force)", file=sys.stderr)
+        info(f"output path {output_path} exists (use --overwrite to force)")
         return 2
 
     # Perform extraction via library API
     result: PFSExtractionResult = extract_pfs_image(image=image, output_path=output_path, progress=None)
 
     for w in result.warnings:
-        print(f"warning: {w}", file=sys.stderr)
+        info(w)
     for e in result.errors:
-        print(f"error: {e}", file=sys.stderr)
+        info(e)
 
     if result.errors:
         return 1
 
-    print("Extraction complete:")
-    print(f"  Output:       {result.output_path}")
-    print(f"  Files written: {result.files_written}")
-    print(f"  Dirs created:  {result.directories_created}")
-    print(f"  Bytes written: {result.bytes_written}")
+    info("Extraction complete:")
+    info(f"  Output:       {result.output_path}")
+    info(f"  Files written: {result.files_written}")
+    info(f"  Dirs created:  {result.directories_created}")
+    info(f"  Bytes written: {result.bytes_written}")
     return 0
 
 
@@ -639,10 +645,10 @@ def build_cli() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     create_parser = sub.add_parser("create", help="Create .ffpfs image")
-    add_create_subcommand_arguments(create_parser)
-    create_parser.set_defaults(func=cmd_create)
+    cli_mkpfs_add_create_args(create_parser)
+    create_parser.set_defaults(func=cli_mkpfs_create_run)
 
-    check_parser = sub.add_parser("check", aliases=["verify"], help="Validate image structure and contents")
+    check_parser = sub.add_parser("check", help="Validate image structure and contents")
     check_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
     check_parser.add_argument("--source", help="Optional source folder to verify hierarchy and content hashes")
     check_parser.add_argument(
@@ -654,17 +660,17 @@ def build_cli() -> argparse.ArgumentParser:
         help="Expected manifest SHA256 (64 hex chars), fails if different",
     )
     check_parser.add_argument("--print-tree", action="store_true", help="Print file tree in check output")
-    check_parser.set_defaults(func=cmd_check)
+    check_parser.set_defaults(func=cli_mkpfs_check_run)
 
     ls_parser = sub.add_parser("ls", help="List files/directories as a tree")
     ls_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
-    ls_parser.set_defaults(func=cmd_ls)
+    ls_parser.set_defaults(func=cli_mkpfs_ls_run)
 
     info_parser = sub.add_parser("info", help="Show lightweight image metadata")
     info_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
-    info_parser.set_defaults(func=cmd_info)
+    info_parser.set_defaults(func=cli_mkpfs_info_run)
 
-    analyze_parser = sub.add_parser("analyze", aliases=["analyse"], help="Inspect image structure and contents")
+    analyze_parser = sub.add_parser("analyze", help="Inspect image structure and contents")
     analyze_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
     analyze_parser.add_argument("--source", help="Optional source folder to verify hierarchy and content hashes")
     analyze_parser.add_argument(
@@ -676,13 +682,13 @@ def build_cli() -> argparse.ArgumentParser:
         help="Expected manifest SHA256 (64 hex chars), fails if different",
     )
     analyze_parser.add_argument("--print-tree", action="store_true", help="Print file tree in analysis output")
-    analyze_parser.set_defaults(func=cmd_analyze)
+    analyze_parser.set_defaults(func=cli_mkpfs_analyze_run)
 
     extract_parser = sub.add_parser("extract", help="Extract files from image to directory")
     extract_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
     extract_parser.add_argument("--output", required=True, help="Destination directory for extraction")
     extract_parser.add_argument("--overwrite", action="store_true", help="Overwrite existing output path")
-    extract_parser.set_defaults(func=cmd_extract)
+    extract_parser.set_defaults(func=cli_mkpfs_extract_run)
 
     return parser
 
@@ -691,3 +697,8 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_cli()
     args = parser.parse_args(argv)
     return int(args.func(args))
+
+
+# Public canonical exports
+cli_mkpfs_build_parser = build_cli
+cli_mkpfs = main

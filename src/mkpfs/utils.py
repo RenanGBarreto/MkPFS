@@ -31,10 +31,10 @@ def normalize_output_path(path_arg: str) -> tuple[Path, str | None]:
 
     Returns (Path, warning_message_or_None).
     """
-    p = Path(path_arg)
+    p: Path = Path(path_arg)
     if p.suffix.lower() == ".ffpfs":
         return p, None
-    normalized = p.with_suffix(".ffpfs")
+    normalized: Path = p.with_suffix(".ffpfs")
     return normalized, f"Output extension changed to .ffpfs (was {p.suffix or '<none>'})"
 
 
@@ -47,8 +47,9 @@ def read_param_json(path: Path) -> dict[str, object]:
 
     try:
         with path.open("r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as exc:  # pragma: no cover - bubble up
+            result: dict[str, object] = json.load(f)
+            return result
+    except (OSError, json.JSONDecodeError) as exc:  # pragma: no cover - bubble up
         raise ValueError(f"Failed to parse {path}: {exc}") from exc
 
 
