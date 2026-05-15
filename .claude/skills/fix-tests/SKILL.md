@@ -15,7 +15,6 @@ Use this skill when the goal is to get the branch ready to push by repeatedly ru
 2. Run the full local validation flow.
    - Run pre-commit checks with `uv run --frozen pre-commit run --all-files`.
    - Run `./run-tests.sh`.
-   - If the repository intentionally uses `./run-rests.sh`, run it as well.
 
 3. Loop until clean.
    - Group related failures by root cause.
