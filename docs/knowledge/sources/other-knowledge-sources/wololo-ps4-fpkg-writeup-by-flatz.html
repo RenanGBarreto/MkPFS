@@ -5668,7 +5668,18 @@ error:
 				return;
 			}
 			if ( dropdown.value ) {
-				document.location.href = dropdown.value;
+				try {
+					const targetUrl = new URL( dropdown.value, window.location.href );
+					const isHttpUrl = 'http:' === targetUrl.protocol || 'https:' === targetUrl.protocol;
+					const isAllowedHost =
+						'wololo.net' === targetUrl.hostname ||
+						targetUrl.hostname.endsWith( '.wololo.net' );
+					if ( isHttpUrl && isAllowedHost ) {
+						document.location.href = targetUrl.href;
+					}
+				} catch ( e ) {
+					// Ignore invalid URLs.
+				}
 			}
 		}, 250 );
 	}
