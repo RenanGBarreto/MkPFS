@@ -554,22 +554,54 @@ def _compute_file_storage_worker(args: tuple[Path, int, bool, int, int]) -> tupl
 
 
 def signed_inode_sig_offset(inode_number: int, ptr_index: int, block_size: int) -> int:
-    inodes_per_block = block_size // consts.INODE_S32_SIZE
+    """Compute the file offset of a signed inode pointer signature entry.
+
+    Args:
+        inode_number: Index of the inode within the inode table.
+        ptr_index: Index of the direct/indirect pointer whose signature is desired.
+        block_size: Filesystem block size.
+
+    Returns:
+        Absolute byte offset within the image where the signature should be written.
+
+    Raises:
+        BuildError: If block_size cannot contain any signed inodes.
+    """
+    inodes_per_block: int = block_size // consts.INODE_S32_SIZE
     if inodes_per_block <= 0:
         raise BuildError("block size too small for signed inode table")
-    inode_table_block = inode_number // inodes_per_block
-    inode_index_in_block = inode_number % inodes_per_block
-    inode_offset = block_size + (inode_table_block * block_size) + (inode_index_in_block * consts.INODE_S32_SIZE)
+    inode_table_block: int = inode_number // inodes_per_block
+    inode_index_in_block: int = inode_number % inodes_per_block
+    inode_offset: int = block_size + (inode_table_block * block_size) + (inode_index_in_block * consts.INODE_S32_SIZE)
     return inode_offset + 0x64 + (consts.SIG_ENTRY_SIZE * ptr_index)
 
 
 def header_inode_block_sig_offset(ptr_index: int) -> int:
+    """Return the offset inside the header for an inode-block signature slot.
+
+    Each inode-table block reserves a 40-byte signature entry; this helper
+    computes the offset for a given index.
+    """
     return 0xB8 + (40 * ptr_index)
 
 
 def make_sig_records_blob(blocks: list[int], block_size: int) -> bytes:
-    blob = bytearray(block_size)
-    offset = 0
+    """Serialize a list of block numbers into a signature-record block.
+
+    Each record is SIG_SIZE bytes of signature followed by a 4-byte block
+    pointer. This helper writes zeroed signatures and fills the block numbers
+    at the correct entry offsets so the caller may HMAC the resulting block
+    and write the signatures later.
+
+    Args:
+        blocks: Sequence of block numbers to include in the record block.
+        block_size: Size of the filesystem block.
+
+    Returns:
+        A bytes object of length `block_size` containing the packed records.
+    """
+    blob: bytearray = bytearray(block_size)
+    offset: int = 0
     for block in blocks:
         struct.pack_into("<i", blob, offset + consts.SIG_SIZE, block)
         offset += consts.SIG_ENTRY_SIZE
@@ -579,21 +611,37 @@ def make_sig_records_blob(blocks: list[int], block_size: int) -> bytes:
 def collect_signed_block_numbers(
     inode: Inode, block_size: int, indirect_block_records: dict[int, list[int]]
 ) -> list[int]:
-    sigs_per_block = block_size // consts.SIG_ENTRY_SIZE
+    """Return ordered data block numbers referenced by a signed inode.
+
+    The returned list contains data block numbers in the order they should be
+    written/read for the inode's payload. It follows the signed inode layout
+    convention: direct blocks first, then records referenced by ib[0], then
+    records referenced by ib[1] via child indirect blocks.
+
+    Args:
+        inode: Inode instance describing block counts and ib/db fields.
+        block_size: Filesystem block size for computing sigs-per-block.
+        indirect_block_records: Map from indirect-block number to its child
+            data block list as constructed during layout assignment.
+
+    Returns:
+        List of block numbers in the order payload blocks appear.
+    """
+    sigs_per_block: int = block_size // consts.SIG_ENTRY_SIZE
     blocks: list[int] = []
-    direct_count = min(inode.blocks, consts.MAX_DIRECT_BLOCKS)
+    direct_count: int = min(inode.blocks, consts.MAX_DIRECT_BLOCKS)
     blocks.extend(inode.db[:direct_count])
-    remaining = inode.blocks - direct_count
+    remaining: int = inode.blocks - direct_count
 
     if remaining > 0:
-        ib0_children = indirect_block_records.get(inode.ib[0], [])
-        take = min(remaining, sigs_per_block)
+        ib0_children: list[int] = indirect_block_records.get(inode.ib[0], [])
+        take: int = min(remaining, sigs_per_block)
         blocks.extend(ib0_children[:take])
         remaining -= take
 
     if remaining > 0:
         for child_indirect in indirect_block_records.get(inode.ib[1], []):
-            child_children = indirect_block_records.get(child_indirect, [])
+            child_children: list[int] = indirect_block_records.get(child_indirect, [])
             take = min(remaining, sigs_per_block)
             blocks.extend(child_children[:take])
             remaining -= take
@@ -604,8 +652,16 @@ def collect_signed_block_numbers(
 
 
 def write_payload_to_blocks(out: BinaryIO, payload: bytes, blocks: list[int], block_size: int) -> None:
+    """Write a payload into the specified blocks in the output image.
+
+    Args:
+        out: Open binary file object to write into.
+        payload: Bytes payload to scatter into blocks.
+        blocks: Sequence of block numbers where payload chunks are written.
+        block_size: Filesystem block size.
+    """
     for index, block in enumerate(blocks):
-        chunk = payload[index * block_size : (index + 1) * block_size]
+        chunk: bytes = payload[index * block_size : (index + 1) * block_size]
         if not chunk:
             break
         out.seek(block * block_size)
