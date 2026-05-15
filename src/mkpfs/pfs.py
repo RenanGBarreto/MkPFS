@@ -14,6 +14,7 @@ import shutil
 import struct
 import time
 import zlib
+from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import BinaryIO
@@ -1099,10 +1100,8 @@ def build_pfs(
         # for any failure that occurs during writing. We re-raise after cleanup
         # so callers still see the original error.
         if tmp_path.exists():
-            try:
+            with suppress(FileNotFoundError):
                 tmp_path.unlink()
-            except FileNotFoundError:
-                pass
         raise
 
     stats.elapsed_seconds = time.time() - start
@@ -1177,12 +1176,8 @@ def prompt_overwrite(output_path: Path) -> bool:
             # Clean up any partial .tmp file if it exists
             tmp_path = Path(str(output_path) + ".tmp")
             if tmp_path.exists():
-                try:
+                with suppress(OSError):
                     tmp_path.unlink()
-                except OSError:
-                    # Ignore OS-level errors when removing temp file; caller will decide
-                    # how to proceed.
-                    pass
             return True
         elif response in ["n", "no"]:
             return False

@@ -54,6 +54,7 @@
 .tmp-*
 *.tmp
 !/tmp/.gitkeep
+/plan-*.md
 
 # Unit tests
 unit.xml

@@ -141,15 +141,15 @@ def test_logging_supports_utf8_and_icon_fallback(monkeypatch: pytest.MonkeyPatch
         encoding = "ascii"
 
     monkeypatch.setattr(mkp_logging.sys, "stdout", DummyStdout())
-    assert mkp_logging._supports_utf8() is False
-    assert mkp_logging._icon("info") == "INFO"
+    assert mkp_logging.supports_utf8() is False
+    assert mkp_logging.icon("info") == "INFO"
 
     class DummyStdoutUtf8:
         encoding = "utf-8"
 
     monkeypatch.setattr(mkp_logging.sys, "stdout", DummyStdoutUtf8())
-    assert mkp_logging._supports_utf8() is True
-    assert mkp_logging._icon("unknown") == ""
+    assert mkp_logging.supports_utf8() is True
+    assert mkp_logging.icon("unknown") == ""
 
 
 def test_logging_supports_utf8_false_when_no_encoding(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -159,7 +159,7 @@ def test_logging_supports_utf8_false_when_no_encoding(monkeypatch: pytest.Monkey
         encoding = ""
 
     monkeypatch.setattr(mkp_logging.sys, "stdout", DummyStdoutNoEncoding())
-    assert mkp_logging._supports_utf8() is False
+    assert mkp_logging.supports_utf8() is False
 
 
 def test_create_args_to_legacy_argv_compress_and_case_insensitive() -> None:
@@ -260,7 +260,7 @@ def test_create_run_verify_with_warnings(monkeypatch: pytest.MonkeyPatch, tmp_pa
     monkeypatch.setattr(cli_mod, "validate_input", lambda _path: ("TITLE", []))
     monkeypatch.setattr(cli_mod, "prompt_overwrite", lambda _p: True)
     monkeypatch.setattr(cli_mod, "build_pfs", lambda **_kwargs: BuildStats(input_path=src, output_path=out_path))
-    monkeypatch.setattr(cli_mod, "run_image_check", lambda *_a, **_k: ([], ["warn-1"], {}, -1))
+    monkeypatch.setattr(cli_mod, "run_image_check", lambda *_a, **_k: ([], ["warning-1"], {}, -1))
     assert cli_mod.cli_mkpfs_create_run(args=args) == 0
 
 
@@ -328,7 +328,7 @@ def test_analyze_crc_with_0x_prefix(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_extract_run_with_warnings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     result: PFSExtractionResult = PFSExtractionResult(image=Path("image.ffpfs"), output_path=tmp_path / "out")
-    result.warnings.append("warn")
+    result.warnings.append("warning")
     monkeypatch.setattr(cli_mod, "extract_pfs_image", lambda **_kwargs: result)
     args = SimpleNamespace(image="image.ffpfs", output=str(tmp_path / "out"), overwrite=True)
     assert cli_mod.cli_mkpfs_extract_run(args=args) == 0

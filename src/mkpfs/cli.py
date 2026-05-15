@@ -7,10 +7,11 @@ argument parsing and user-facing printing.
 
 import argparse
 import multiprocessing as mp
+from contextlib import suppress
 from pathlib import Path
 
 from . import consts
-from .logging import error, info, warn
+from .logging import error, info, warning
 from .pfs import (
     BuildError,
     BuildStats,
@@ -142,10 +143,8 @@ def prompt_overwrite(output_path: Path) -> bool:
             # Clean up any partial .tmp file if it exists
             tmp_path = Path(str(output_path) + ".tmp")
             if tmp_path.exists():
-                try:
+                with suppress(OSError):
                     tmp_path.unlink()
-                except OSError:
-                    pass
             return True
         if response in ("n", "no"):
             return False
@@ -393,7 +392,7 @@ def cli_mkpfs_create_run(args: argparse.Namespace) -> int:
     warnings: list[str]
     _title_id, warnings = validate_input(source_path)
     for w in warnings:
-        warn(w)
+        warning(w)
 
     compress: bool = not args.no_compress
     case_insensitive: bool = args.case_insensitive or not args.case_sensitive
@@ -446,7 +445,7 @@ def cli_mkpfs_create_run(args: argparse.Namespace) -> int:
     )
 
     for w in warnings:
-        warn(w)
+        warning(w)
     for e in errors:
         error(e)
     return 1 if errors else 0
@@ -488,7 +487,7 @@ def cli_mkpfs_check_run(args: argparse.Namespace) -> int:
         expected_manifest_sha256=expected_manifest_sha256,
     )
     for w in warnings:
-        warn(w)
+        warning(w)
     for e in errors:
         error(e)
     return 1 if errors else 0
@@ -537,7 +536,7 @@ def cli_mkpfs_info_run(args: argparse.Namespace) -> int:
         info(f"Magic:       0x{info_result.header.magic:016X}")
 
     for w in info_result.warnings:
-        warn(w)
+        warning(w)
     for e in info_result.errors:
         error(e)
 

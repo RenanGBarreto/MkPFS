@@ -34,7 +34,7 @@ def test_check_run_with_errors() -> None:
         "run_image_check",
         lambda image, source, print_tree, expected_crc32=None, expected_manifest_sha256=None: (
             ["err"],
-            ["warn"],
+            ["warning"],
             {},
             -1,
         ),
