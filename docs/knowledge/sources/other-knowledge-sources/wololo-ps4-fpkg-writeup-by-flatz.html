@@ -5669,11 +5669,12 @@ error:
 			}
 			if ( dropdown.value ) {
 				try {
-					const targetUrl = new URL( dropdown.value, window.location.origin );
-					if (
-						( 'http:' === targetUrl.protocol || 'https:' === targetUrl.protocol ) &&
-						targetUrl.origin === window.location.origin
-					) {
+					const targetUrl = new URL( dropdown.value, window.location.href );
+					const isHttpUrl = 'http:' === targetUrl.protocol || 'https:' === targetUrl.protocol;
+					const isAllowedHost =
+						'wololo.net' === targetUrl.hostname ||
+						targetUrl.hostname.endsWith( '.wololo.net' );
+					if ( isHttpUrl && isAllowedHost ) {
 						document.location.href = targetUrl.href;
 					}
 				} catch ( e ) {
