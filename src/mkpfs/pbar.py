@@ -19,15 +19,35 @@ if TYPE_CHECKING:
 
 
 class Progress:
+    """Simple terminal progress helper used by CLI build flows.
+
+    The Progress class writes progress updates to stderr. It is intentionally
+    lightweight and has no external dependencies to keep CLI startup fast.
+
+    Attributes:
+        enabled: Whether progress output is active.
+        width: Width of the visual progress bar in characters.
+    """
+
     def __init__(self, enabled: bool = True, width: int = 32) -> None:
-        self.enabled = enabled
-        self.width = width
+        self.enabled: bool = enabled
+        self.width: int = width
         self.last_phase: str | None = None
         self.phase_start_time: dict[str, float] = {}
         self.phase_bytes: dict[str, int] = {}  # Track bytes processed per phase
         self.phase_last_len: dict[str, int] = {}  # Track last written line length per phase
 
     def step(self, phase: str, done: int, total: int, bytes_processed: int = 0) -> None:
+        """Update progress for a named phase.
+
+        Args:
+            phase: Logical phase name shown in the progress line (for example
+                'compress' or 'write').
+            done: Number of completed units for this phase.
+            total: Total units for this phase.
+            bytes_processed: Optional number of bytes processed; when provided
+                the progress will display byte-based throughput and ETA.
+        """
         if not self.enabled:
             return
 
@@ -81,7 +101,11 @@ class Progress:
         self.last_phase = phase
 
     def status(self, message: str) -> None:
-        """Print a status message without progress bar."""
+        """Print a status message without progress bar.
+
+        This always writes to stderr so CLI output and progress remain separate
+        from normal stdout usage.
+        """
         if not self.enabled:
             return
         sys.stderr.write(message + "\n")
@@ -89,8 +113,22 @@ class Progress:
 
 
 def scan_source_tree(root: Path, progress: Progress) -> tuple[dict[str, DirNode], dict[str, FileNode], int]:
+    """Scan a source directory tree and return DirNode/FileNode maps.
+
+    The returned structures mirror what the older monolithic implementation
+    produced. This helper is used by the build flow and must preserve
+    determinism and ordering.
+
+    Args:
+        root: Path to the directory to scan.
+        progress: Progress instance used to report scanning progress.
+
+    Returns:
+        A tuple of (dirs, files, total_files) where dirs and files are maps keyed
+        by relative path and total_files is the number of files discovered.
+    """
     progress.status("\nDiscovering files...")
-    abs_files = [p for p in root.rglob("*") if p.is_file()]
+    abs_files: list[Path] = [p for p in root.rglob("*") if p.is_file()]
     abs_files.sort(key=lambda p: p.relative_to(root).as_posix().lower())
 
     dirs: dict[str, DirNode] = {"": DirNode(rel_dir="", name="uroot", parent_rel_dir=None)}

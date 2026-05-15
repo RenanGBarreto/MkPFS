@@ -8,28 +8,57 @@ from typing import BinaryIO
 
 
 def human_readable_size(size: int) -> str:
-    """Convert bytes to human-readable format."""
+    """Convert a byte count to a human readable string.
+
+    Args:
+        size: Number of bytes.
+
+    Returns:
+        Human readable string using binary prefixes (KB, MB, ...).
+    """
+    s: float = float(size)
     for unit in ["B", "KB", "MB", "GB", "TB"]:
-        if size < 1024.0:
-            return f"{size:.2f} {unit}"
-        size /= 1024.0
-    return f"{size:.2f} PB"
+        if s < 1024.0:
+            return f"{s:.2f} {unit}"
+        s /= 1024.0
+    return f"{s:.2f} PB"
 
 
 def ceil_div(a: int, b: int) -> int:
-    """Integer ceiling division."""
-    return (a + b - 1) // b
+    """Compute the integer ceiling of a / b.
+
+    Args:
+        a: Numerator.
+        b: Denominator (must be positive).
+
+    Returns:
+        The smallest integer >= a / b.
+    """
+    result: int = (a + b - 1) // b
+    return result
 
 
 def is_power_of_two(v: int) -> bool:
-    """Return True if v is a positive power of two."""
+    """Return True if ``v`` is a positive power of two.
+
+    Args:
+        v: Value to test.
+
+    Returns:
+        True when v is 1,2,4,8,...; False otherwise.
+    """
     return v > 0 and (v & (v - 1)) == 0
 
 
 def normalize_output_path(path_arg: str) -> tuple[Path, str | None]:
-    """Normalize output path and ensure .ffpfs extension.
+    """Normalize an output path and ensure it uses the `.ffpfs` extension.
 
-    Returns (Path, warning_message_or_None).
+    Args:
+        path_arg: Input path string provided by the user.
+
+    Returns:
+        A tuple of (normalized Path, optional warning message). The warning is
+        provided when the extension was changed.
     """
     p: Path = Path(path_arg)
     if p.suffix.lower() == ".ffpfs":
@@ -39,14 +68,21 @@ def normalize_output_path(path_arg: str) -> tuple[Path, str | None]:
 
 
 def read_param_json(path: Path) -> dict[str, object]:
-    """Read a JSON file and return parsed object.
+    """Read and parse a JSON parameter file used by games.
 
-    Raises a ValueError on parse errors.
+    Args:
+        path: Path to the JSON file.
+
+    Returns:
+        Parsed JSON object as a dict.
+
+    Raises:
+        ValueError: When the file cannot be read or parsed as JSON.
     """
     import json
 
     try:
-        with path.open("r", encoding="utf-8") as f:
+        with path.open(mode="r", encoding="utf-8") as f:
             result: dict[str, object] = json.load(f)
             return result
     except (OSError, json.JSONDecodeError) as exc:  # pragma: no cover - bubble up
@@ -54,12 +90,21 @@ def read_param_json(path: Path) -> dict[str, object]:
 
 
 def _read_exact(fh: BinaryIO, offset: int, size: int) -> bytes:
-    """Read ``size`` bytes from file handle starting at ``offset``.
+    """Read exactly ``size`` bytes from file handle starting at ``offset``.
 
-    Raises ValueError on truncated read.
+    Args:
+        fh: Binary file-like object supporting seek and read.
+        offset: Offset in bytes from the start of the file where read begins.
+        size: Number of bytes to read.
+
+    Returns:
+        The requested bytes.
+
+    Raises:
+        ValueError: If the read returns fewer than ``size`` bytes.
     """
     fh.seek(offset)
-    data = fh.read(size)
+    data: bytes = fh.read(size)
     if len(data) != size:
         raise ValueError(f"truncated read at offset {offset} (wanted {size}, got {len(data)})")
     return data
