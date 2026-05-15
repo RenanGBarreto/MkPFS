@@ -26,9 +26,9 @@ Make the content renderer-safe for PyPI and validate builds before publishing.
 
 ## Repo-specific notes
 
-- This repository is currently a placeholder package that will later receive the real source code.
-- Keep the public README short, accurate, and install-focused.
-- Validate release artifacts with build and `twine check` before publishing.
+- This repository is an active package (`mkpfs`) with CLI entrypoint `mkpfs = "mkpfs.cli:main"`.
+- Keep the public README accurate for current command surface: `create`, `check` (`verify` alias), `ls`, `info`, `analyze` (`analyse` alias), and `extract`.
+- Validate release artifacts with `uv build` and `uv run --frozen twine check dist/*` before publishing.
 - Use `./tmp/` only for ephemeral planning, scratch files, and generated HTML reports.
 
 ## References

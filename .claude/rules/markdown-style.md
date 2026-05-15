@@ -13,7 +13,8 @@ Keep this file short and actionable. If you change visual assets or global color
 ## High-level tone and voice
 - Practical, concise, and slightly technical: assume the reader knows basic tooling but keep onboarding friendly.
 - Write in active voice, present tense. Prefer short paragraphs and bullet lists.
-- Avoid marketing hyperbole, be factual about status (e.g., "pre-alpha") and capabilities.
+- Avoid marketing hyperbole, be factual about capabilities and workflows.
+- Do not foreground lifecycle labels such as alpha or beta in user-facing docs unless explicitly requested.
 
 ## Visual identity
 - Primary brand color: blue. Example palette (use these hex colors in images and banners):

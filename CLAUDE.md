@@ -17,13 +17,18 @@ Follow these guidelines precisely.
    - Use Google style for docstring
    - Prefer explicit keyword arguments when calling functions or instantiating classes in Python; avoid relying on parameter ordering.
    - All functions must include pydocs (Google style) describing what the function does, its parameters, return value(s), and any raised exceptions.
+   - Keep CLI wiring in `src/mkpfs/cli.py` (`build_cli`, `cmd_*`) and keep PFS format/build/inspection logic in `src/mkpfs/pfs.py`.
+   - Reuse shared modules for cross-cutting concerns: constants in `src/mkpfs/consts.py`, progress and tree scan flow in `src/mkpfs/pbar.py`, and utility helpers in `src/mkpfs/utils.py`.
+   - Current CLI command surface is `create`, `check` (alias `verify`), `ls`, `info`, `analyze` (alias `analyse`), and `extract`; keep docs aligned when changing this surface.
 
 3. Testing Requirements
    - Framework: `uv run --frozen pytest`
    - run ./run-tests.sh for convenience
+   - `./run-tests.sh` also runs `uv run ruff format .` and `uv run ruff check . --fix` before tests, so it can modify files.
    - Coverage: test edge cases and errors
    - New features require tests
    - Bug fixes require regression tests
+   - Keep CLI smoke behavior covered in `tests/test_main.py`; update the help-text assertion when CLI description/output changes.
    - Release validation should build the package and run `twine check` before publish
 
 4. Temporary Artifacts and Reports

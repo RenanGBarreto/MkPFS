@@ -13,6 +13,13 @@ Keep entries concise, source-backed, and oriented toward repeatable workflows.
 ## Core References
 
 - [PyPI project guidelines](rules/pypi-project-guidelines.md) — packaging checklist, README guidance, and release-validation references.
+- [Root agent rules](../AGENTS.md) — canonical coding, testing, and style expectations used by local agent workflows.
+- [Claude agent mirror](../CLAUDE.md) — synchronized agent guidance used by local `.claude` workflows.
+- Architecture map: keep CLI wiring in [`src/mkpfs/cli.py`](../src/mkpfs/cli.py), and keep PFS format/build/inspection logic in [`src/mkpfs/pfs.py`](../src/mkpfs/pfs.py).
+- Shared modules: constants in [`src/mkpfs/consts.py`](../src/mkpfs/consts.py), progress/tree scan in [`src/mkpfs/pbar.py`](../src/mkpfs/pbar.py), helpers in [`src/mkpfs/utils.py`](../src/mkpfs/utils.py).
+- Current CLI surface: `create`, `check` (`verify` alias), `ls`, `info`, `analyze` (`analyse` alias), and `extract`; keep docs and smoke tests aligned.
+- CLI smoke test anchor: [`tests/test_main.py`](../tests/test_main.py) validates help output text and should be updated when CLI description text changes.
+- Convenience validation script: [`run-tests.sh`](../run-tests.sh) runs `uv sync`, installs pre-commit hooks, runs Ruff format/check with `--fix`, then runs pytest.
 
 ## Related Projects Knowledge Base
 
