@@ -1,8 +1,6 @@
-"""Utilities shared between builder and analyzer.
+"""Utilities shared between multiple modules."""
 
-Contains small helpers extracted from legacy ffpfs.py and analyze_pfs.py.
-"""
-
+import json
 from pathlib import Path
 from typing import BinaryIO
 
@@ -79,8 +77,6 @@ def read_param_json(path: Path) -> dict[str, object]:
     Raises:
         ValueError: When the file cannot be read or parsed as JSON.
     """
-    import json
-
     try:
         with path.open(mode="r", encoding="utf-8") as f:
             result: dict[str, object] = json.load(f)

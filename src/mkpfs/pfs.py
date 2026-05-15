@@ -1,7 +1,7 @@
-"""Create a PS-style unsigned PFS image for ShadowMountPlus workflows.
+"""Manages PFS file images that could be mounted in the PS4 and PS5.
 
-This script builds an unsigned PFS image inspired by LibOrbisPkg's
-layout for inner PFS images (superroot + flat_path_table + uroot).
+Inspired by LibOrbisPkg's layout for inner PFS images and the way
+ShadowMountPlus mount images.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from typing import BinaryIO
 
 from . import consts
 from .logging import info
-from .pbar import Progress, scan_source_tree
+from .pbar import Progress
 from .utils import _read_exact, ceil_div, human_readable_size, read_param_json
 
 
@@ -245,8 +245,16 @@ class Dirent:
         return size
 
     def to_bytes(self) -> bytes:
-        name_bytes = self.name.encode("ascii", errors="strict")
-        out = bytearray()
+        """Serialize this directory entry to the on-disk dirent format.
+
+        The returned bytes contain fields (inode, type, name length, entry size)
+        followed by the ASCII name and padding to reach the aligned entry size.
+
+        Returns:
+            Bytes suitable for writing into a directory payload block.
+        """
+        name_bytes: bytes = self.name.encode("ascii", errors="strict")
+        out: bytearray = bytearray()
         out += struct.pack("<Iiii", self.inode_number, self.type_code, self.name_length, self.ent_size)
         out += name_bytes
         if len(out) < self.ent_size:
@@ -274,13 +282,18 @@ class Inode:
     time_sec: int = 0
 
     def _base_bytes(self) -> bytearray:
-        ts = self.time_sec
-        time_nsec = 0
-        uid = 0
-        gid = 0
-        unk1 = 0
-        unk2 = 0
-        out = bytearray()
+        """Return common inode header bytes used by various on-disk inode layouts.
+
+        This helper centralizes packing of the fixed-size fields present in both
+        signed and unsigned inode representations.
+        """
+        ts: int = self.time_sec
+        time_nsec: int = 0
+        uid: int = 0
+        gid: int = 0
+        unk1: int = 0
+        unk2: int = 0
+        out: bytearray = bytearray()
         out += struct.pack("<HHI", self.mode, self.nlink, self.flags)
         out += struct.pack("<qq", self.size, self.size_compressed)
         out += struct.pack("<qqqq", ts, ts, ts, ts)
@@ -289,7 +302,15 @@ class Inode:
         return out
 
     def to_bytes(self) -> bytes:
-        out = self._base_bytes()
+        """Serialize the inode in the unsigned D32 layout.
+
+        Returns:
+            Bytes of length INODE_D32_SIZE containing the inode fields.
+
+        Raises:
+            BuildError: If the produced byte length does not match expectations.
+        """
+        out: bytearray = self._base_bytes()
         out += struct.pack("<" + "i" * consts.MAX_DIRECT_BLOCKS, *self.db)
         out += struct.pack("<" + "i" * consts.MAX_INDIRECT_BLOCKS, *self.ib)
         if len(out) != consts.INODE_D32_SIZE:
@@ -297,7 +318,12 @@ class Inode:
         return bytes(out)
 
     def to_bytes_signed32(self) -> bytes:
-        out = self._base_bytes()
+        """Serialize the inode using the signed S32 layout (32-byte signatures).
+
+        This layout interleaves 32-byte signature placeholders and 4-byte block
+        pointers for each direct/indirect entry.
+        """
+        out: bytearray = self._base_bytes()
         for sig, block in zip(self.db_sig, self.db):
             if len(sig) != consts.SIG_SIZE:
                 raise BuildError("Signed inode direct signature must be 32 bytes")
@@ -553,6 +579,72 @@ def _compute_file_storage_worker(args: tuple[Path, int, bool, int, int]) -> tupl
     return abs_path, raw, len(raw), False, gain_pct, hypothetical_compressed_size
 
 
+def scan_source_tree(root: Path, progress: Progress) -> tuple[dict[str, DirNode], dict[str, FileNode], int]:
+    """Scan a source directory tree and return DirNode/FileNode maps.
+
+    The returned structures mirror what the older monolithic implementation
+    produced. This helper is used by the build flow and must preserve
+    determinism and ordering.
+
+    Args:
+        root: Path to the directory to scan.
+        progress: Progress instance used to report scanning progress.
+
+    Returns:
+        A tuple of (dirs, files, total_files) where dirs and files are maps keyed
+        by relative path and total_files is the number of files discovered.
+    """
+    progress.status("\nDiscovering files...")
+    abs_files: list[Path] = [p for p in root.rglob("*") if p.is_file()]
+    abs_files.sort(key=lambda p: p.relative_to(root).as_posix().lower())
+
+    dirs: dict[str, DirNode] = {"": DirNode(rel_dir="", name="uroot", parent_rel_dir=None)}
+    files: dict[str, FileNode] = {}
+
+    total: int = len(abs_files)
+    total_bytes: int = 0
+    for i, abs_path in enumerate(abs_files, start=1):
+        rel: str = abs_path.relative_to(root).as_posix()
+        parent: str = str(Path(rel).parent.as_posix())
+        if parent == ".":
+            parent = ""
+        parts: list[str] = list(Path(rel).parts[:-1])
+
+        curr: str = ""
+        for part in parts:  # pragma: no cover - exercised indirectly in integration tests
+            next_rel: str = f"{curr}/{part}" if curr else part
+            if next_rel not in dirs:
+                dirs[next_rel] = DirNode(rel_dir=next_rel, name=part, parent_rel_dir=curr if curr != "" else "")
+                dirs[curr].children_dirs.append(next_rel)
+            curr = next_rel
+
+        if parent not in dirs:  # pragma: no cover - defensive fallback
+            # This should not happen but keep it robust.
+            dirs[parent] = DirNode(
+                rel_dir=parent, name=Path(parent).name if parent else "uroot", parent_rel_dir=""
+            )  # pragma: no cover
+
+        name: str = Path(rel).name  # pragma: no cover - defensive path
+        raw_size: int = abs_path.stat().st_size
+        total_bytes += raw_size
+        file_node: FileNode = FileNode(
+            rel_path=rel,
+            abs_path=abs_path,
+            parent_rel_dir=parent,
+            name=name,
+            raw_size=raw_size,
+        )
+        files[rel] = file_node
+        dirs[parent].children_files.append(rel)
+        progress.step("scan", i, total, bytes_processed=total_bytes)
+
+    for d in dirs.values():
+        d.children_dirs.sort(key=str.lower)
+        d.children_files.sort(key=str.lower)
+
+    return dirs, files, total
+
+
 def signed_inode_sig_offset(inode_number: int, ptr_index: int, block_size: int) -> int:
     """Compute the file offset of a signed inode pointer signature entry.
 
@@ -573,7 +665,11 @@ def signed_inode_sig_offset(inode_number: int, ptr_index: int, block_size: int) 
     inode_table_block: int = inode_number // inodes_per_block
     inode_index_in_block: int = inode_number % inodes_per_block
     inode_offset: int = block_size + (inode_table_block * block_size) + (inode_index_in_block * consts.INODE_S32_SIZE)
-    return inode_offset + 0x64 + (consts.SIG_ENTRY_SIZE * ptr_index)
+    # The signed inode payload area begins at offset 0x64 within the inode
+    # structure when using the S32 layout. Each signature record is SIG_ENTRY_SIZE
+    # bytes long (SIG_SIZE + 4-byte block pointer) and signatures are written at
+    # the start of their entry, so compute that absolute file offset here.
+    return inode_offset + 0x64 + (ptr_index * consts.SIG_ENTRY_SIZE)
 
 
 def header_inode_block_sig_offset(ptr_index: int) -> int:

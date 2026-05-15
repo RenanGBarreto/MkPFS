@@ -1,3 +1,4 @@
-from . import cli, pfs, utils
+"""MKPFS package root.
 
-__all__ = ["cli", "pfs", "utils"]
+MkPFS is a toolkit for building, verifying, browsing, and managing PlayStation PFS images.
+"""

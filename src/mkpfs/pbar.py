@@ -1,21 +1,12 @@
-"""Progress / progress-bar helpers extracted from psf.py.
+"""Progress / progress-bar helpers.
 
-This module contains the Progress class and scan_source_tree implementation
-copied from psf.py so psf can be simplified. Keep behavior identical; imports
-refer to psf.consts and the repo's types where necessary.
+This module provides the Progress class used by CLI build flows.
 """
-
-from __future__ import annotations
 
 import sys
 import time
-from pathlib import Path
-from typing import TYPE_CHECKING
 
 from .utils import human_readable_size
-
-if TYPE_CHECKING:
-    from .pfs import DirNode, FileNode
 
 
 class Progress:
@@ -110,67 +101,3 @@ class Progress:
             return
         sys.stderr.write(message + "\n")
         sys.stderr.flush()
-
-
-def scan_source_tree(root: Path, progress: Progress) -> tuple[dict[str, DirNode], dict[str, FileNode], int]:
-    """Scan a source directory tree and return DirNode/FileNode maps.
-
-    The returned structures mirror what the older monolithic implementation
-    produced. This helper is used by the build flow and must preserve
-    determinism and ordering.
-
-    Args:
-        root: Path to the directory to scan.
-        progress: Progress instance used to report scanning progress.
-
-    Returns:
-        A tuple of (dirs, files, total_files) where dirs and files are maps keyed
-        by relative path and total_files is the number of files discovered.
-    """
-    progress.status("\nDiscovering files...")
-    abs_files: list[Path] = [p for p in root.rglob("*") if p.is_file()]
-    abs_files.sort(key=lambda p: p.relative_to(root).as_posix().lower())
-
-    dirs: dict[str, DirNode] = {"": DirNode(rel_dir="", name="uroot", parent_rel_dir=None)}
-    files: dict[str, FileNode] = {}
-
-    total: int = len(abs_files)
-    total_bytes: int = 0
-    for i, abs_path in enumerate(abs_files, start=1):
-        rel: str = abs_path.relative_to(root).as_posix()
-        parent: str = str(Path(rel).parent.as_posix())
-        if parent == ".":
-            parent = ""
-        parts: list[str] = list(Path(rel).parts[:-1])
-
-        curr: str = ""
-        for part in parts:
-            next_rel: str = f"{curr}/{part}" if curr else part
-            if next_rel not in dirs:
-                dirs[next_rel] = DirNode(rel_dir=next_rel, name=part, parent_rel_dir=curr if curr != "" else "")
-                dirs[curr].children_dirs.append(next_rel)
-            curr = next_rel
-
-        if parent not in dirs:
-            # This should not happen but keep it robust.
-            dirs[parent] = DirNode(rel_dir=parent, name=Path(parent).name if parent else "uroot", parent_rel_dir="")
-
-        name: str = Path(rel).name
-        raw_size: int = abs_path.stat().st_size
-        total_bytes += raw_size
-        file_node: FileNode = FileNode(
-            rel_path=rel,
-            abs_path=abs_path,
-            parent_rel_dir=parent,
-            name=name,
-            raw_size=raw_size,
-        )
-        files[rel] = file_node
-        dirs[parent].children_files.append(rel)
-        progress.step("scan", i, total, bytes_processed=total_bytes)
-
-    for d in dirs.values():
-        d.children_dirs.sort(key=str.lower)
-        d.children_files.sort(key=str.lower)
-
-    return dirs, files, total

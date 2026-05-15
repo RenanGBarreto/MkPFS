@@ -639,7 +639,7 @@ def cli_mkpfs_extract_run(args: argparse.Namespace) -> int:
     return 0
 
 
-def build_cli() -> argparse.ArgumentParser:
+def cli_mkpfs_main_parsers() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ffpfs", description="PFS create/check/list CLI")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -692,12 +692,29 @@ def build_cli() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = build_cli()
+def cli_mkpfs_main(argv: list[str] | None = None) -> int:
+    parser: argparse.ArgumentParser = cli_mkpfs_main_parsers()
     args = parser.parse_args(argv)
     return int(args.func(args))
 
 
-# Public canonical exports
-cli_mkpfs_build_parser = build_cli
-cli_mkpfs = main
+def cli_mkpfs(argv: list[str] | None = None) -> int:
+    """Compatibility wrapper called by historical tests and scripts.
+
+    This thin helper constructs the main parsers and dispatches to the
+    selected command. It intentionally mirrors the behaviour of
+    :func:`cli_mkpfs_main` but is preserved for external tooling that
+    imports ``cli_mkpfs`` directly.
+    """
+    parser: argparse.ArgumentParser = cli_mkpfs_main_parsers()
+    args = parser.parse_args(argv)
+    return int(args.func(args))
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Backward-compatible main function used by some test helpers.
+
+    This delegates to :func:`cli_mkpfs_main` which is the canonical main
+    entrypoint used by the package.
+    """
+    return cli_mkpfs_main(argv)
