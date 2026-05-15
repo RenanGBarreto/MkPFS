@@ -34,7 +34,6 @@ Follow these guidelines precisely.
 5. Git
    - Follow the Conventional Commits style on commit messages.
 
-
 ## Code Formatting and Linting
 
 1. Ruff
@@ -49,11 +48,15 @@ Follow these guidelines precisely.
 3. Type annotations (project preference)
    - The project targets Python 3.11: prefer built-in generic types (list, dict, tuple, set) instead of typing.List/Dict/Tuple/Set.
    - Use the `X | None` union form instead of `Optional[X]` where appropriate.
-   - Add type hints ALL variables and functions in this project.
+   - Annotate all function and method signatures with types.
+   - All local variables must have explicit type annotations at their definition site, even for simple literals. Examples: `count: int = 0`, `name: str = ""`.
+   - Prefer built-in generic types and explicit variable annotations; avoid relying on implicit type inference for readability and static analysis.
+   - Always reason if variables are nullable and select the appropriate type. Sometimes differentiating None from a 0 or empty string is the key to good code.
 
 ## GitHub CLI Tips
 
 When using `gh` command in terminal automation:
+
 - **Disable pager to avoid interactive prompts**: Use `GH_PAGER=cat gh <command>` to prevent pager from opening and blocking terminal execution
 - **Export logs to file**: `GH_PAGER=cat gh run view <run-id> > output.txt 2>&1` to capture full output without interactive delays
 - **Check workflow status**: `GH_PAGER=cat gh run view <run-id> --json conclusion,status` for structured status data
@@ -64,3 +67,15 @@ When using `gh` command in terminal automation:
 ## Writing style preference
 
 When writing in natural language README, docs, comments, or wiki pages, avoid using the em dash (—). Prefer commas, hyphens, 'title: subtitle' structure, or a semicolon to separate related ideas and maintain consistent punctuation across project documentation in the same paragraph.
+
+### `PFS` Capitalization Rule
+
+- **Class / Symbol Names**: Use uppercase `PFS` (all three letters) when it appears inside class names, types, or other identifiers that use CamelCase or TitleCase. Examples: `PFSExtractionResult`, `PFSImageInfo`, `PFSOperationResult`.
+- **Variables / Functions / snake_case**: Use lowercase `pfs` for variable names, function prefixes, and snake_case identifiers. Examples: `pfs_gen_sign_key`, `read_pfs_info`, `pfs_version`.
+- **Never** use `Pfs` (mixed-case) — either `PFS` or `pfs` is correct depending on the context.
+
+### Long-function block comments
+
+- For functions that are long (roughly >30 lines) or that contain multiple logical phases, add a single-line comment above each major block explaining its purpose. Keep comments succinct and in present tense.
+- These single-line comments are NOT a replacement for proper function docstrings; they should summarize the block intent (for example: `# Walk source tree and collect file metadata`).
+- Prefer comments that clarify why a block exists or what it accomplishes, not restating what the code already shows.

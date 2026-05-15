@@ -1953,3 +1953,403 @@ def validate_source_match(
         src_data = (source / rel).read_bytes()
         if hashlib.sha256(src_data).digest() != hashlib.sha256(payload).digest():
             errors.append(f"content mismatch for file: {rel}")
+
+
+@dataclass
+class PFSOperationResult:
+    """Base result object for high-level PFS operations.
+
+    Args:
+        image: Input image path.
+        errors: Collected fatal or validation errors.
+        warnings: Collected non-fatal warnings.
+    """
+
+    image: Path
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
+
+
+@dataclass
+class PFSImageInfo(PFSOperationResult):
+    """Lightweight PFS image metadata summary.
+
+    Args:
+        image: Input image path.
+        errors: Collected fatal or validation errors.
+        warnings: Collected non-fatal warnings.
+        size_bytes: Image size on disk.
+        header: Parsed image header, when available.
+    """
+
+    size_bytes: int = 0
+    header: ParsedHeader | None = None
+
+    @property
+    def version_label(self) -> str:
+        """Return the human-friendly version label."""
+        if self.header is None:
+            return ""
+        return "PS5" if self.header.version == consts.PFS_VERSION_PS5 else "PS4"
+
+
+@dataclass
+class PFSImageInspection(PFSImageInfo):
+    """Detailed PFS image inspection result.
+
+    Args:
+        image: Input image path.
+        errors: Collected fatal or validation errors.
+        warnings: Collected non-fatal warnings.
+        size_bytes: Image size on disk.
+        header: Parsed image header, when available.
+        inodes: Parsed inode table.
+        uroot_inode: Inode number of the filesystem root.
+        file_inodes: Mapping of relative file paths to inode numbers.
+        dir_inodes: Mapping of relative directory paths to inode numbers.
+        dirents_by_inode: Parsed directory entries for each inode.
+        fpt_map: Parsed flat_path_table entries.
+        collision_map: Parsed collision resolver entries.
+        special_inodes: Inodes reserved by the filesystem layout.
+        checked_files: Number of payload hashes checked.
+        data_crc32: Cumulative CRC32 of logical file payloads.
+        manifest_sha256: SHA256 digest of the logical file manifest.
+        compressed_files: Number of files stored compressed.
+        logical_file_bytes: Total logical file payload bytes.
+        stored_file_bytes: Total stored file payload bytes.
+    """
+
+    inodes: list[ParsedInode] = field(default_factory=list)
+    uroot_inode: int = -1
+    file_inodes: dict[str, int] = field(default_factory=dict)
+    dir_inodes: dict[str, int] = field(default_factory=dict)
+    dirents_by_inode: dict[int, list[ParsedDirent]] = field(default_factory=dict)
+    fpt_map: dict[int, int] = field(default_factory=dict)
+    collision_map: dict[int, list[ParsedDirent]] = field(default_factory=dict)
+    special_inodes: set[int] = field(default_factory=set)
+    checked_files: int = 0
+    data_crc32: int = 0
+    manifest_sha256: str = ""
+    compressed_files: int = 0
+    logical_file_bytes: int = 0
+    stored_file_bytes: int = 0
+
+    @property
+    def has_tree(self) -> bool:
+        """Return whether the inspection contains a parsed filesystem tree."""
+        return self.uroot_inode >= 0 and len(self.dirents_by_inode) > 0
+
+
+@dataclass
+class PFSExtractionResult(PFSOperationResult):
+    """Result of extracting a PFS image to a directory.
+
+    Args:
+        image: Input image path.
+        errors: Collected fatal or validation errors.
+        warnings: Collected non-fatal warnings.
+        output_path: Destination directory path.
+        files_written: Number of files written to disk.
+        directories_created: Number of directories created or ensured.
+        bytes_written: Total logical file bytes written to disk.
+    """
+
+    output_path: Path | None = None
+    files_written: int = 0
+    directories_created: int = 0
+    bytes_written: int = 0
+
+
+def _image_size_bytes(image: Path) -> int:
+    """Return the size of a path on disk, or zero when unavailable."""
+    try:
+        return image.stat().st_size
+    except OSError:
+        return 0
+
+
+def read_pfs_info(image: Path) -> PFSImageInfo:
+    """Read lightweight metadata from a PFS image.
+
+    Args:
+        image: Input PFS image path.
+
+    Returns:
+        A structured summary containing the parsed header and any warnings or errors.
+    """
+    info = PFSImageInfo(image=image, size_bytes=_image_size_bytes(image))
+
+    if not image.exists() or not image.is_file():
+        info.errors.append(f"image path does not exist or is not a file: {image}")
+        return info
+
+    try:
+        with image.open("rb") as fh:
+            info.header = parse_image_header(fh)
+    except (OSError, ValueError) as exc:
+        info.errors.append(f"failed to read image header: {exc}")
+        return info
+
+    if info.header.magic != consts.PFS_MAGIC:
+        info.errors.append(f"header magic mismatch: 0x{info.header.magic:016X} != 0x{consts.PFS_MAGIC:016X}")
+    if info.header.block_size <= 0 or (info.header.block_size & (info.header.block_size - 1)) != 0:
+        info.errors.append(f"invalid block size {info.header.block_size}")
+    if info.header.readonly != 1:
+        info.warnings.append(f"header readonly byte is {info.header.readonly}, expected 1")
+
+    return info
+
+
+def inspect_pfs_image(
+    image: Path,
+    source: Path | None = None,
+    expected_crc32: int | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> PFSImageInspection:
+    """Inspect a PFS image and collect structural validation details.
+
+    Args:
+        image: Input PFS image path.
+        source: Optional source tree to compare against.
+        expected_crc32: Optional expected cumulative payload CRC32.
+        expected_manifest_sha256: Optional expected manifest SHA256 digest.
+
+    Returns:
+        A detailed inspection report with parsed tree data, warnings, and errors.
+    """
+    inspection = PFSImageInspection(image=image, size_bytes=_image_size_bytes(image))
+
+    if not image.exists() or not image.is_file():
+        inspection.errors.append(f"image path does not exist or is not a file: {image}")
+        return inspection
+
+    try:
+        with image.open("rb") as fh:
+            header = parse_image_header(fh)
+            inspection.header = header
+
+            try:
+                inodes = parse_image_inodes(fh, header)
+            except (OSError, ValueError) as exc:
+                inspection.errors.append(f"failed to parse inode table: {exc}")
+                return inspection
+
+            inspection.inodes = inodes
+            validate_inode_layout(header, inodes, inspection.errors, inspection.warnings)
+
+            try:
+                verify_signed_image_signatures(fh, header, inodes, inspection.errors)
+            except (OSError, ValueError) as exc:
+                inspection.errors.append(f"failed to verify image signatures: {exc}")
+
+            try:
+                (
+                    inspection.uroot_inode,
+                    inspection.fpt_map,
+                    inspection.collision_map,
+                    inspection.special_inodes,
+                ) = parse_superroot_and_indexes(fh, header, inodes, inspection.errors)
+            except (OSError, ValueError) as exc:
+                inspection.errors.append(f"failed to parse superroot and indexes: {exc}")
+                return inspection
+
+            if inspection.uroot_inode >= 0:
+                try:
+                    inspection.file_inodes, inspection.dir_inodes, inspection.dirents_by_inode = build_tree_from_uroot(
+                        fh,
+                        header,
+                        inodes,
+                        inspection.uroot_inode,
+                        inspection.errors,
+                    )
+                except (OSError, ValueError) as exc:
+                    inspection.errors.append(f"failed to build filesystem tree: {exc}")
+                    return inspection
+
+                case_insensitive = bool(header.mode & consts.PFS_MODE_CASE_INSENSITIVE)
+                expected_fpt = build_expected_fpt(inspection.file_inodes, inspection.dir_inodes, case_insensitive)
+
+                validate_fpt_maps(inspection.fpt_map, inspection.collision_map, expected_fpt, inspection.errors)
+                validate_ps5_checklist(
+                    fh, header, inodes, inspection.file_inodes, inspection.warnings, inspection.errors
+                )
+
+                try:
+                    (
+                        inspection.checked_files,
+                        inspection.data_crc32,
+                        inspection.manifest_sha256,
+                    ) = verify_file_payload_hashes(
+                        fh,
+                        header,
+                        inodes,
+                        inspection.file_inodes,
+                        inspection.errors,
+                    )
+                except (OSError, ValueError) as exc:
+                    inspection.errors.append(f"failed to verify file payload hashes: {exc}")
+
+                if expected_crc32 is not None and inspection.data_crc32 != expected_crc32:
+                    inspection.errors.append(
+                        f"CRC32 mismatch: actual 0x{inspection.data_crc32:08X}, expected 0x{expected_crc32:08X}"
+                    )
+                if (
+                    expected_manifest_sha256 is not None
+                    and inspection.manifest_sha256.lower() != expected_manifest_sha256.lower()
+                ):
+                    inspection.errors.append(
+                        "Manifest SHA256 mismatch: actual "
+                        f"{inspection.manifest_sha256}, expected {expected_manifest_sha256.lower()}"
+                    )
+
+                reachable = (
+                    set(inspection.file_inodes.values())
+                    | set(inspection.dir_inodes.values())
+                    | set(inspection.special_inodes)
+                )
+                orphan_inodes = sorted(inode.number for inode in inodes if inode.number not in reachable)
+                if orphan_inodes:
+                    inspection.errors.append(
+                        "orphan inodes not reachable from filesystem tree: "
+                        + ", ".join(str(value) for value in orphan_inodes[:20])
+                        + (" ..." if len(orphan_inodes) > 20 else "")
+                    )
+
+                if source is not None:
+                    validate_source_match(fh, header, inodes, inspection.file_inodes, source, inspection.errors)
+
+                inspection.compressed_files = sum(
+                    1 for inode_num in inspection.file_inodes.values() if inodes[inode_num].is_compressed
+                )
+                inspection.logical_file_bytes = sum(
+                    max(0, inodes[inode_num].size) for inode_num in inspection.file_inodes.values()
+                )
+                inspection.stored_file_bytes = sum(
+                    max(0, inodes[inode_num].size_compressed) for inode_num in inspection.file_inodes.values()
+                )
+    except (OSError, ValueError) as exc:
+        inspection.errors.append(f"failed to inspect image: {exc}")
+
+    return inspection
+
+
+def analyze_pfs_image(image: Path) -> PFSImageInspection:
+    """Analyze a PFS image without comparing it to a source tree.
+
+    Args:
+        image: Input PFS image path.
+
+    Returns:
+        A detailed inspection report.
+    """
+    return inspect_pfs_image(image=image)
+
+
+def verify_pfs_image(
+    image: Path,
+    source: Path | None = None,
+    expected_crc32: int | None = None,
+    expected_manifest_sha256: str | None = None,
+) -> PFSImageInspection:
+    """Verify a PFS image against optional source and hash expectations.
+
+    Args:
+        image: Input PFS image path.
+        source: Optional source tree to compare against.
+        expected_crc32: Optional expected cumulative payload CRC32.
+        expected_manifest_sha256: Optional expected manifest SHA256 digest.
+
+    Returns:
+        A detailed inspection report.
+    """
+    return inspect_pfs_image(
+        image=image,
+        source=source,
+        expected_crc32=expected_crc32,
+        expected_manifest_sha256=expected_manifest_sha256,
+    )
+
+
+def extract_pfs_image(
+    image: Path,
+    output_path: Path,
+    progress: Progress | None = None,
+) -> PFSExtractionResult:
+    """Extract all logical files from a PFS image.
+
+    Args:
+        image: Input PFS image path.
+        output_path: Destination directory for extracted files.
+        progress: Optional progress reporter.
+
+    Returns:
+        A structured extraction result.
+    """
+    result = PFSExtractionResult(image=image, output_path=output_path, bytes_written=0)
+    inspection = inspect_pfs_image(image=image)
+    result.warnings.extend(inspection.warnings)
+    result.errors.extend(inspection.errors)
+
+    if result.errors:
+        return result
+    if inspection.header is None:
+        result.errors.append("image header is not available")
+        return result
+    if output_path.exists() and not output_path.is_dir():
+        result.errors.append(f"output path exists and is not a directory: {output_path}")
+        return result
+
+    directory_targets = [
+        output_path / Path(rel_dir)
+        for rel_dir in sorted(inspection.dir_inodes.keys(), key=lambda value: (value.count("/"), value.lower(), value))
+        if rel_dir != ""
+    ]
+    file_targets = [
+        (rel_path, output_path / Path(rel_path), inode_num)
+        for rel_path, inode_num in sorted(inspection.file_inodes.items())
+    ]
+
+    for directory_target in directory_targets:
+        if directory_target.exists() and not directory_target.is_dir():
+            result.errors.append(f"output path conflicts with a file: {directory_target}")
+    for _rel_path, file_target, _inode_num in file_targets:
+        if file_target.exists():
+            result.errors.append(f"output file already exists: {file_target}")
+
+    if result.errors:
+        return result
+
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    if progress is not None:
+        progress.status(f"\nExtracting {len(file_targets)} files to {output_path}...")
+
+    try:
+        with image.open("rb") as fh:
+            for directory_target in directory_targets:
+                if not directory_target.exists():
+                    directory_target.mkdir(parents=True, exist_ok=False)
+                    result.directories_created += 1
+
+            total_files = len(file_targets)
+            for index, (rel_path, file_target, inode_num) in enumerate(file_targets, start=1):
+                inode = inspection.inodes[inode_num]
+                payload = read_image_inode_payload(fh, inode, inspection.header.block_size)
+                if inode.is_compressed:
+                    try:
+                        payload = zlib.decompress(payload)
+                    except zlib.error as exc:
+                        result.errors.append(f"failed to decompress file '{rel_path}': {exc}")
+                        return result
+
+                file_target.parent.mkdir(parents=True, exist_ok=True)
+                file_target.write_bytes(payload)
+                result.files_written += 1
+                result.bytes_written += len(payload)
+
+                if progress is not None:
+                    progress.step("extract", index, total_files, bytes_processed=result.bytes_written)
+    except (OSError, ValueError) as exc:
+        result.errors.append(f"failed to extract image: {exc}")
+
+    return result

@@ -11,8 +11,12 @@
 !.claude/MEMORY.md
 !.claude/settings.json
 
+# Ignored auto-generated site files
+/site/*
+
 # Editor / local config
 .idea/
+.vscode/
 .copier-answers.yml
 .env
 .env.*

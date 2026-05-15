@@ -17,14 +17,20 @@ from .pfs import (
     BuildError,
     BuildStats,
     ParsedDirent,
+    PFSExtractionResult,
+    PFSImageInfo,
+    PFSImageInspection,
     build_expected_fpt,
     build_pfs,
     build_tree_from_uroot,
     compose_pfs_mode_with_sign,
+    extract_pfs_image,
     human_readable_size,
+    inspect_pfs_image,
     parse_image_header,
     parse_image_inodes,
     parse_superroot_and_indexes,
+    read_pfs_info,
     render_tree,
     validate_fpt_maps,
     validate_inode_layout,
@@ -185,91 +191,7 @@ def parse_args(argv: list | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def main_analyzer(argv: list | None = None) -> int:
-    # Support analyzer subcommand by delegating before parsing build args.
-    # Keeps existing build CLI behavior unchanged when 'analyze' is not used.
-    if argv and len(argv) > 0 and argv[0] == "analyze":
-        from .analyze import main as analyze_main
-
-        return analyze_main(argv[1:])
-    args = parse_args(argv)
-
-    source_path = Path(args.path).expanduser().resolve()
-    output_path, output_warn = normalize_output_path(args.output)
-    output_path = output_path.expanduser().resolve()
-
-    if output_warn:
-        print(f"warning: {output_warn}", file=sys.stderr)
-
-    if args.threshold_gain < 0 or args.threshold_gain > 100:
-        raise BuildError("--threshold-gain must be within 0..100")
-
-    if isinstance(args.block_size, str) and args.block_size.strip().lower() == "auto":
-        block_size = 65536
-    else:
-        try:
-            block_size = int(args.block_size)
-        except (TypeError, ValueError) as exc:
-            raise BuildError("--block-size must be an integer value or 'auto'") from exc
-
-    # PFS-compatible values: power-of-two block size in the supported range.
-    if not (block_size > 0 and (block_size & (block_size - 1)) == 0):
-        raise BuildError("--block-size must be a power of two")
-    if block_size < 0x1000 or block_size > 0x200000:
-        raise BuildError("--block-size must be between 4096 and 2097152")
-
-    available_cpu_count = mp.cpu_count()
-    if args.cpu_count < 0 or args.cpu_count > available_cpu_count:
-        raise BuildError(f"--cpu-count must be within 0..{available_cpu_count}")
-
-    if args.compression_level < 0 or args.compression_level > 9:
-        raise BuildError("--compression-level must be within 0..9")
-
-    _title_id, warnings = validate_input(source_path)
-    for w in warnings:
-        print(f"warning: {w}", file=sys.stderr)
-
-    compress = not args.no_compress
-    case_insensitive = args.case_insensitive or not args.case_sensitive
-    pfs_version = consts.PFS_VERSION_PS5 if args.version == "PS5" else consts.PFS_VERSION_PS4
-
-    print_build_parameters(
-        source_path,
-        output_path,
-        block_size,
-        pfs_version,
-        args.inode_bits,
-        case_insensitive,
-        args.signed,
-        compress,
-        args.threshold_gain,
-        args.cpu_count,
-        args.compression_level,
-        args.dry_run,
-    )
-
-    if not args.dry_run and not prompt_overwrite(output_path):
-        print("Operation cancelled.")
-        return 0
-
-    stats = build_pfs(
-        source_root=source_path,
-        output_path=output_path,
-        block_size=block_size,
-        pfs_version=pfs_version,
-        inode_bits=args.inode_bits,
-        case_insensitive=case_insensitive,
-        signed=args.signed,
-        compress=compress,
-        threshold_gain=args.threshold_gain,
-        cpu_count=args.cpu_count,
-        zlib_level=args.compression_level,
-        dry_run=args.dry_run,
-        verbose=args.verbose,
-    )
-
-    print_summary(stats)
-    return 0
+# Legacy analyzer compatibility removed; use the `analyze` subcommand instead.
 
 
 def run_image_check(
@@ -588,6 +510,130 @@ def cmd_ls(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_info(args: argparse.Namespace) -> int:
+    """Show lightweight PFS image metadata.
+
+    Args:
+        args: Parsed CLI arguments with `image` attribute.
+    """
+    image: Path = Path(args.image).expanduser().resolve()
+    info: PFSImageInfo = read_pfs_info(image)
+
+    # Print header-level metadata and any warnings/errors
+    print("=" * 70)
+    print("PFS Image Info")
+    print("=" * 70)
+    print(f"Image:       {image}")
+    print(f"Size (bytes):{info.size_bytes}")
+    if info.header is not None:
+        print(f"Version:     {info.version_label} ({info.header.version})")
+        print(f"Block size:  {info.header.block_size}")
+        print(f"Magic:       0x{info.header.magic:016X}")
+
+    for w in info.warnings:
+        print(f"warning: {w}", file=sys.stderr)
+    for e in info.errors:
+        print(f"error: {e}", file=sys.stderr)
+
+    return 1 if info.errors else 0
+
+
+def cmd_analyze(args: argparse.Namespace) -> int:
+    """Inspect a PFS image and emit a detailed report.
+
+    Args:
+        args: Parsed CLI arguments (image, source, expected hashes, print-tree).
+    """
+    image: Path = Path(args.image).expanduser().resolve()
+    source: Path | None = Path(args.source).expanduser().resolve() if getattr(args, "source", None) else None
+
+    # Parse optional expected CRC32
+    expected_crc32: int | None = None
+    if getattr(args, "expected_crc32", None):
+        crc_text: str = args.expected_crc32.strip().lower()
+        if crc_text.startswith("0x"):
+            crc_text = crc_text[2:]
+        try:
+            expected_crc32 = int(crc_text, 16)
+        except ValueError:
+            print("error: --expected-crc32 must be hex (example: 7F528D1F or 0x7F528D1F)", file=sys.stderr)
+            return 2
+
+    # Parse optional expected manifest digest
+    expected_manifest_sha256: str | None = None
+    if getattr(args, "expected_manifest_sha256", None):
+        digest: str = args.expected_manifest_sha256.strip().lower()
+        if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
+            print("error: --expected-manifest-sha256 must be a 64-hex SHA256 digest", file=sys.stderr)
+            return 2
+        expected_manifest_sha256 = digest
+
+    # Run library inspection
+    inspection: PFSImageInspection = inspect_pfs_image(
+        image=image,
+        source=source,
+        expected_crc32=expected_crc32,
+        expected_manifest_sha256=expected_manifest_sha256,
+    )
+
+    # Emit report
+    print("=" * 70)
+    print("PFS Image Inspection")
+    print("=" * 70)
+    print(f"Image:    {image}")
+    if inspection.header is not None:
+        ver_label: str = "PS5" if inspection.header.version == consts.PFS_VERSION_PS5 else "PS4"
+        print(f"Version:  {inspection.header.version} ({ver_label})")
+        print(f"Block:    {inspection.header.block_size}")
+
+    print(f"Warnings: {len(inspection.warnings)}")
+    print(f"Errors:   {len(inspection.errors)}")
+
+    for w in inspection.warnings:
+        print(f"warning: {w}", file=sys.stderr)
+    for e in inspection.errors:
+        print(f"error: {e}", file=sys.stderr)
+
+    if getattr(args, "print_tree", False) and inspection.has_tree:
+        print("/")
+        for line in render_tree(inspection.dirents_by_inode, inspection.uroot_inode):
+            print(line)
+
+    return 1 if inspection.errors else 0
+
+
+def cmd_extract(args: argparse.Namespace) -> int:
+    """Extract all files from a PFS image into a directory.
+
+    Args:
+        args: Parsed CLI arguments with `image`, `output`, and optional `overwrite`.
+    """
+    image: Path = Path(args.image).expanduser().resolve()
+    output_path: Path = Path(args.output).expanduser().resolve()
+
+    if output_path.exists() and not args.overwrite:
+        print(f"error: output path {output_path} exists (use --overwrite to force)", file=sys.stderr)
+        return 2
+
+    # Perform extraction via library API
+    result: PFSExtractionResult = extract_pfs_image(image=image, output_path=output_path, progress=None)
+
+    for w in result.warnings:
+        print(f"warning: {w}", file=sys.stderr)
+    for e in result.errors:
+        print(f"error: {e}", file=sys.stderr)
+
+    if result.errors:
+        return 1
+
+    print("Extraction complete:")
+    print(f"  Output:       {result.output_path}")
+    print(f"  Files written: {result.files_written}")
+    print(f"  Dirs created:  {result.directories_created}")
+    print(f"  Bytes written: {result.bytes_written}")
+    return 0
+
+
 def build_cli() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ffpfs", description="PFS create/check/list CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -613,6 +659,30 @@ def build_cli() -> argparse.ArgumentParser:
     ls_parser = sub.add_parser("ls", help="List files/directories as a tree")
     ls_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
     ls_parser.set_defaults(func=cmd_ls)
+
+    info_parser = sub.add_parser("info", help="Show lightweight image metadata")
+    info_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
+    info_parser.set_defaults(func=cmd_info)
+
+    analyze_parser = sub.add_parser("analyze", aliases=["analyse"], help="Inspect image structure and contents")
+    analyze_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
+    analyze_parser.add_argument("--source", help="Optional source folder to verify hierarchy and content hashes")
+    analyze_parser.add_argument(
+        "--expected-crc32",
+        help="Expected cumulative data CRC32 (hex), fails if different",
+    )
+    analyze_parser.add_argument(
+        "--expected-manifest-sha256",
+        help="Expected manifest SHA256 (64 hex chars), fails if different",
+    )
+    analyze_parser.add_argument("--print-tree", action="store_true", help="Print file tree in analysis output")
+    analyze_parser.set_defaults(func=cmd_analyze)
+
+    extract_parser = sub.add_parser("extract", help="Extract files from image to directory")
+    extract_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
+    extract_parser.add_argument("--output", required=True, help="Destination directory for extraction")
+    extract_parser.add_argument("--overwrite", action="store_true", help="Overwrite existing output path")
+    extract_parser.set_defaults(func=cmd_extract)
 
     return parser
 
