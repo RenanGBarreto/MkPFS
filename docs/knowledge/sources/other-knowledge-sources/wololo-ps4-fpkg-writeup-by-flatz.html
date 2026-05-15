@@ -5668,7 +5668,17 @@ error:
 				return;
 			}
 			if ( dropdown.value ) {
-				document.location.href = dropdown.value;
+				try {
+					const targetUrl = new URL( dropdown.value, window.location.origin );
+					if (
+						( 'http:' === targetUrl.protocol || 'https:' === targetUrl.protocol ) &&
+						targetUrl.origin === window.location.origin
+					) {
+						document.location.href = targetUrl.href;
+					}
+				} catch ( e ) {
+					// Ignore invalid URLs.
+				}
 			}
 		}, 250 );
 	}
