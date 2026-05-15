@@ -1,14 +1,13 @@
 site_name: MkPFS
 site_description: Build, check, and inspect PlayStation PFS images, with a curated knowledge base.
-site_author: Renan Barreto
+site_author: Renan
 repo_name: mkpfs
-repo_url: https://github.com/RenanGBarreto/mkpfs
+repo_url: https://github.com/renangbarreto/mkpfs
 
 validation:
   links:
     not_found: ignore
 edit_uri: edit/main/docs/
-copyright: Copyright &copy; 2026 Renan Barreto
 
 theme:
   name: material
@@ -65,8 +64,8 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/RenanGBarreto/mkpfs
-      name: Project repository
-    - icon: fontawesome/brands/github
+      name: Project Source Code
+    - icon: fontawesome/heart-pulse
       link: https://github.com/sponsors/RenanGBarreto
       name: Sponsor the project
 
