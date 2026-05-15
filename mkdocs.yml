@@ -65,7 +65,7 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/RenanGBarreto/mkpfs
       name: Project Source Code
-    - icon: fontawesome/heart-pulse
+    - icon: fontawesome/solid/heart
       link: https://github.com/sponsors/RenanGBarreto
       name: Sponsor the project
 
