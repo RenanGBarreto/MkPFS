@@ -9,6 +9,7 @@
 !.claude/rules/
 !.claude/rules/**
 !.claude/MEMORY.md
+!.claude/settings.json
 
 # Editor / local config
 .idea/

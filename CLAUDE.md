@@ -60,3 +60,7 @@ When using `gh` command in terminal automation:
 - Default: `gh` commands may open `less` pager, which opens the alternate terminal buffer and blocks async execution
 - **GIT_PAGER** also opens alternate buffer — use `GIT_PAGER='' git <command>` to suppress for git commands
 - **Prefer Python subprocess** for automation that requires capturing output reliably: `subprocess.run(['gh', ...], capture_output=True, text=True, env={**os.environ, 'GH_PAGER': 'cat'})`
+
+## Writing style preference
+
+When writing in natural language README, docs, comments, or wiki pages, avoid using the em dash (—). Prefer commas, hyphens, 'title: subtitle' structure, or a semicolon to separate related ideas and maintain consistent punctuation across project documentation in the same paragraph.
