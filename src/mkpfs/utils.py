@@ -8,7 +8,7 @@ from typing import BinaryIO
 
 
 def human_readable_size(size: int) -> str:
-    """Convert a byte count to a human readable string.
+    """Convert a byte count to a human-readable string.
 
     Args:
         size: Number of bytes.

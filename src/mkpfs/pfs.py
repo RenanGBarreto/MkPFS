@@ -26,7 +26,19 @@ from .utils import _read_exact, ceil_div, human_readable_size, read_param_json
 
 
 def validate_d32_ranges(inodes: list[Inode], final_ndblock: int) -> None:
-    """Validate values that are serialized into 32-bit inode structures."""
+    """Validate values that will be serialized into 32-bit inode structures.
+
+    This check ensures no fields exceed the limits of signed/unsigned 32-bit
+    representations used in the legacy on-disk layout. It raises BuildError on
+    any overflow or invalid negative value encountered.
+
+    Args:
+        inodes: List of Inode objects to validate.
+        final_ndblock: The final data block index after layout assignment.
+
+    Raises:
+        BuildError: When a value is out of the supported range.
+    """
     if final_ndblock > consts.INT32_MAX:
         raise BuildError(f"Image requires block index {final_ndblock}, exceeds D32 pointer limit {consts.INT32_MAX}")
 
@@ -51,30 +63,81 @@ def validate_d32_ranges(inodes: list[Inode], final_ndblock: int) -> None:
 
 
 def pfs_gen_sign_key(ekpfs: bytes, seed: bytes) -> bytes:
-    """Generate signing key (convenience wrapper)."""
+    """Generate the HMAC-based signing key used for PFS signatures.
+
+    This is a small wrapper around :func:`pfs_gen_crypto_key` that selects the
+    conventionally reserved index for the signing key.
+
+    Args:
+        ekpfs: Master EKPFS key material.
+        seed: PFS seed value from the image header.
+
+    Returns:
+        32-byte HMAC-SHA256-derived key.
+    """
     return pfs_gen_crypto_key(ekpfs, seed, 2)
 
 
 def hmac_sha256(key: bytes, data: bytes) -> bytes:
-    """HMAC-SHA256 convenience helper."""
+    """Return the HMAC-SHA256 digest of ``data`` using ``key``.
+
+    Args:
+        key: HMAC key.
+        data: Data to authenticate.
+
+    Returns:
+        Raw 32-byte HMAC-SHA256 digest.
+    """
     return hmac.new(key, data, hashlib.sha256).digest()
 
 
 def pfs_gen_crypto_key(ekpfs: bytes, seed: bytes, index: int) -> bytes:
-    return hmac.new(ekpfs, struct.pack("<I", index) + seed, hashlib.sha256).digest()
+    """Derive a per-index cryptographic key with HMAC-SHA256.
+
+    Args:
+        ekpfs: Base key material.
+        seed: Image seed bytes.
+        index: Integer index distinguishing derived keys.
+
+    Returns:
+        32-byte derived key.
+    """
+    data: bytes = struct.pack("<I", index) + seed
+    return hmac.new(ekpfs, data, hashlib.sha256).digest()
 
 
 def signed_inode_capacity_bytes(block_size: int) -> int:
-    sigs_per_block = block_size // consts.SIG_ENTRY_SIZE
+    """Return the maximum payload size (bytes) representable by a signed inode.
+
+    Signed inodes use a layout with direct pointers, one-level and two-level
+    indirect chains described by signature records. This helper computes the
+    maximum number of data blocks addressable and converts it to bytes.
+
+    Args:
+        block_size: Filesystem block size in bytes.
+
+    Returns:
+        Maximum representable payload size in bytes for a single signed inode.
+    """
+    sigs_per_block: int = block_size // consts.SIG_ENTRY_SIZE
     if sigs_per_block <= 0:
         return 0
-    max_blocks = 12 + sigs_per_block + (sigs_per_block * sigs_per_block)
+    max_blocks: int = 12 + sigs_per_block + (sigs_per_block * sigs_per_block)
     return max_blocks * block_size
 
 
 def compose_pfs_mode(inode_bits: int, case_insensitive: bool) -> int:
+    """Compose the PFS header mode flags from options.
+
+    Args:
+        inode_bits: 32 or 64 to indicate inode width.
+        case_insensitive: When True, set the case-insensitive flag.
+
+    Returns:
+        Integer mode bitfield suitable for writing to the header.
+    """
     # Bit 3 (0x8) controls case-sensitivity: when set, filesystem is case-insensitive.
-    mode = 0
+    mode: int = 0
     if inode_bits == 64:
         mode |= consts.PFS_MODE_64BIT_INODES
     if case_insensitive:
@@ -83,24 +146,45 @@ def compose_pfs_mode(inode_bits: int, case_insensitive: bool) -> int:
 
 
 def compose_pfs_mode_with_sign(inode_bits: int, case_insensitive: bool, signed: bool) -> int:
-    mode = compose_pfs_mode(inode_bits, case_insensitive)
+    """Compose PFS mode flags and optionally include the signed flag.
+
+    Args:
+        inode_bits: 32 or 64.
+        case_insensitive: Case-insensitive flag.
+        signed: Whether to set the signed-mode bit.
+
+    Returns:
+        Integer mode bitfield.
+    """
+    mode: int = compose_pfs_mode(inode_bits, case_insensitive)
     if signed:
         mode |= consts.PFS_MODE_SIGNED
     return mode
 
 
 def build_inode_block_sig_s64(inode_block_count: int, block_size: int, now: int, signed: bool = False) -> bytes:
-    """Build the superblock InodeBlockSig using the signed-64 inode layout.
+    """Create the 0x310-byte InodeBlockSig used in the header.
 
-    Real working images encode this field as DinodeS64-sized data in the header
-    even when filesystem inodes are unsigned D32.
+    The header encodes a small DinodeS64 structure for the inode-table block
+    signature region. This helper builds that fixed-size structure. The layout
+    matches observed reference images where signatures are zeroed and only a
+    small subset of db/ib entries contain block pointers.
+
+    Args:
+        inode_block_count: Number of inode table blocks.
+        block_size: Filesystem block size.
+        now: Current epoch seconds to populate timestamp fields.
+        signed: When True, set flags appropriate for signed layout.
+
+    Returns:
+        The fixed-size bytes blob to place into the header.
     """
-    sig = bytearray(0x310)
+    sig: bytearray = bytearray(0x310)
 
     struct.pack_into("<H", sig, 0x00, 0)  # mode
     struct.pack_into("<H", sig, 0x02, 1)  # nlink
     struct.pack_into("<I", sig, 0x04, 0 if signed else consts.INODE_FLAG_READONLY)  # flags
-    size_bytes = inode_block_count * block_size
+    size_bytes: int = inode_block_count * block_size
     struct.pack_into("<q", sig, 0x08, size_bytes)
     struct.pack_into("<q", sig, 0x10, size_bytes)
 
@@ -115,15 +199,15 @@ def build_inode_block_sig_s64(inode_block_count: int, block_size: int, now: int,
     # Signed-64 layout: 12 direct and 5 indirect entries, each 32-byte sig + 8-byte block.
     # Reference images use zeroed signatures and only db[0] = 1 for inode-table start block.
     # Observed S64 header layout includes 4-byte padding after `blocks`.
-    db_base = 0x68
+    db_base: int = 0x68
     for i in range(12):
         if signed:
-            block = 1 + i if i < inode_block_count else 0
+            block: int = 1 + i if i < inode_block_count else 0
         else:
             block = 1 if i == 0 else 0
         struct.pack_into("<q", sig, db_base + i * 40 + 32, block)
 
-    ib_base = db_base + 12 * 40
+    ib_base: int = db_base + 12 * 40
     for i in range(5):
         struct.pack_into("<q", sig, ib_base + i * 40 + 32, 0)
 
