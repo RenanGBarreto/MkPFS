@@ -389,8 +389,27 @@ def compute_file_storage(
     block_size: int = 65536,
     zlib_level: int = zlib.Z_BEST_COMPRESSION,
 ) -> None:
-    raw = file_node.abs_path.read_bytes()
-    too_small = len(raw) < block_size
+    """Decide how a file will be stored in the image.
+
+    This function updates the provided FileNode in-place with the payload that will be
+    written into the image (either raw or compressed), the stored size, whether it is
+    compressed, and the observed gain percentage. It also computes a hypothetical
+    compressed size used for statistics.
+
+    Args:
+        file_node: FileNode describing the file to process.
+        compress: Whether compression is enabled.
+        threshold_gain: Minimum percent gain required to keep compressed data.
+        block_size: Files smaller than this are not compressed (alignment heuristic).
+        zlib_level: Compression level passed to zlib.compress.
+
+    Raises:
+        OSError: If reading the file from disk fails.
+    """
+    raw: bytes = file_node.abs_path.read_bytes()
+    too_small: bool = len(raw) < block_size
+    # Hypothetical compressed size is useful for reporting even when not actually
+    # compressing in this pass.
     file_node.hypothetical_compressed_size = len(raw) if too_small else len(zlib.compress(raw, level=zlib_level))
 
     if not compress or len(raw) == 0 or too_small:
@@ -400,8 +419,8 @@ def compute_file_storage(
         file_node.gain_pct = 0.0
         return
 
-    comp = zlib.compress(raw, level=zlib_level)
-    gain_pct = ((len(raw) - len(comp)) / len(raw)) * 100.0
+    comp: bytes = zlib.compress(raw, level=zlib_level)
+    gain_pct: float = ((len(raw) - len(comp)) / len(raw)) * 100.0
     if gain_pct >= threshold_gain:
         file_node.stored_payload = comp
         file_node.stored_size = len(comp)
@@ -417,24 +436,37 @@ def compute_file_storage(
 def _compute_file_storage_worker(args: tuple[Path, int, bool, int, int]) -> tuple[Path, bytes, int, bool, float, int]:
     """Worker function for parallel compression.
 
-    Returns (file_path, stored_payload, stored_size, compressed, gain_pct, hypothetical_compressed_size).
+    This function is executed in a worker process and performs the same storage
+    decision logic as :func:`compute_file_storage` but returns the results instead
+    of mutating a FileNode.
+
+    Args:
+        args: Tuple containing (abs_path, threshold_gain, compress, block_size, zlib_level).
+
+    Returns:
+        A tuple (file_path, stored_payload, stored_size, compressed, gain_pct, hypothetical_compressed_size).
     """
-    abs_path, threshold_gain, compress, block_size, zlib_level = args
-    raw = abs_path.read_bytes()
-    too_small = len(raw) < block_size
-    hypothetical_compressed_size = (
+    abs_path: Path
+    threshold_gain: int
+    compress: bool
+    block_size: int
+    zlib_level: int
+    (abs_path, threshold_gain, compress, block_size, zlib_level) = args
+
+    raw: bytes = abs_path.read_bytes()
+    too_small: bool = len(raw) < block_size
+    hypothetical_compressed_size: int = (
         len(raw) if (not compress or too_small) else len(zlib.compress(raw, level=zlib_level))
     )
 
     if not compress or len(raw) == 0 or too_small:
         return abs_path, raw, len(raw), False, 0.0, hypothetical_compressed_size
 
-    comp = zlib.compress(raw, level=zlib_level)
-    gain_pct = ((len(raw) - len(comp)) / len(raw)) * 100.0
+    comp: bytes = zlib.compress(raw, level=zlib_level)
+    gain_pct: float = ((len(raw) - len(comp)) / len(raw)) * 100.0
     if gain_pct >= threshold_gain:
         return abs_path, comp, len(comp), True, gain_pct, hypothetical_compressed_size
-    else:
-        return abs_path, raw, len(raw), False, gain_pct, hypothetical_compressed_size
+    return abs_path, raw, len(raw), False, gain_pct, hypothetical_compressed_size
 
 
 def signed_inode_sig_offset(inode_number: int, ptr_index: int, block_size: int) -> int:
