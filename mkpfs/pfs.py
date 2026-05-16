@@ -515,7 +515,12 @@ def compute_file_storage(
 
     Raises:
         OSError: If reading the file from disk fails.
+        ValueError: If threshold_gain is outside the 0..100 range.
     """
+    # Defensive validation: threshold_gain must be a sensible percentage value.
+    if not (0 <= threshold_gain <= 100):
+        raise ValueError(f"threshold_gain must be between 0 and 100 inclusive, got {threshold_gain}")
+
     raw: bytes = file_node.abs_path.read_bytes()
     too_small: bool = len(raw) < block_size
     # Hypothetical compressed size is useful for reporting even when not actually
@@ -1365,8 +1370,11 @@ def build_pfs(
 
     except Exception:
         # Broad exception handler is used here to ensure temporary file cleanup
-        # for any failure that occurs during writing. We re-raise after cleanup
-        # so callers still see the original error.
+        # for any failure that occurs during writing. We intentionally catch
+        # ``Exception`` (not ``BaseException``) so cleanup runs for I/O and
+        # runtime errors while allowing KeyboardInterrupt and SystemExit to
+        # propagate. Re-raise the original exception after removing the temp
+        # file so callers observe the original traceback.
         if tmp_path.exists():
             with suppress(FileNotFoundError):
                 tmp_path.unlink()
