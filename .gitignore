@@ -42,7 +42,7 @@
 
 # Legacy code
 /legacy/
-/current-plan/
+#/current-plan
 
 # Related project files
 /related-projects/*
