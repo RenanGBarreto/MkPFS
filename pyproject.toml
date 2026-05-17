@@ -85,7 +85,7 @@ omit = [
 [tool.ruff]
 line-length = 119
 target-version = "py311"
-exclude = [".git", ".ruff_cache", ".venv", ".vscode"]
+exclude = [".git", ".ruff_cache", ".venv", ".vscode",  "legacy"]
 
 [tool.ruff.lint]
 preview = true
