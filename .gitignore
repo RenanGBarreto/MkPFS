@@ -40,6 +40,9 @@
 .aws/
 .ruff_cache/
 
+# Legacy code
+/legacy/*
+
 # Related project files
 /related-projects/*
 !/related-projects/shadowmountplus
