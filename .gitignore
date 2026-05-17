@@ -40,6 +40,10 @@
 .aws/
 .ruff_cache/
 
+# Legacy code
+/legacy/
+/current-plan/
+
 # Related project files
 /related-projects/*
 !/related-projects/shadowmountplus
@@ -237,3 +241,4 @@ target/
 #   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
 #   in version control.
 #   https://pdm.fming.dev/#use-with-ide
+

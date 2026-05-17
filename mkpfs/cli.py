@@ -642,7 +642,7 @@ def cli_mkpfs_main_parsers() -> argparse.ArgumentParser:
     cli_mkpfs_add_create_args(create_parser)
     create_parser.set_defaults(func=cli_mkpfs_create_run)
 
-    check_parser = sub.add_parser("check", help="Validate image structure and contents")
+    check_parser = sub.add_parser("check", aliases=["verify"], help="Validate image structure and contents")
     check_parser.add_argument("--image", required=True, help="Path to .ffpfs image")
     check_parser.add_argument("--source", help="Optional source folder to verify hierarchy and content hashes")
     check_parser.add_argument(

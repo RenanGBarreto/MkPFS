@@ -47,6 +47,9 @@ Follow these guidelines precisely.
 5. Git
     - Follow the Conventional Commits style on commit messages.
 
+6. Read-only legacy
+    - The `./legacy` directory is read-only. The agent MUST NOT create, edit, move, or delete any file or folder under `./legacy`. Read-only access only.
+
 ## Code Formatting and Linting
 
 1. Ruff

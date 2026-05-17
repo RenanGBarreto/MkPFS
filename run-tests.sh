@@ -1,10 +1,15 @@
-#!/bin/bash
-# Run Tests locally
-
-# Exit immediately if a command exits with a non-zero status including undefined variables and errors in pipelines
+#!/usr/bin/env bash
 set -euo pipefail
 
-# Install dependencies
+# Ensure .venv is activated (unless SKIP_VENV): python3 must resolve to mkpfs/.venv/bin/python3
+# Set SKIP_VENV=1 to skip activating the venv
+if [ -z "${SKIP_VENV:-}" ]; then
+  pybin=$(which python3 2>/dev/null)
+  if [[ ! "$pybin" =~ mkpfs/.venv/bin/python3$ ]]; then
+    source .venv/bin/activate || { echo '[run-tests] ERROR: Could not activate .venv'; exit 1; }
+  fi
+fi
+
 uv sync
 
 # Install pre-commit hooks
@@ -18,8 +23,7 @@ uv run ruff format .
 uv run ruff check . --fix
 
 # Prepare and validate documentation site (optional)
-# Set SKIP_DOCS=1 to skip syncing and building the documentation (useful on CI or when mkdocs
-# dependencies are not available locally).
+# Set SKIP_DOCS=1 to skip syncing and building the documentation
 if [ -z "${SKIP_DOCS:-}" ]; then
   echo "[run-tests] Syncing and validating documentation (set SKIP_DOCS=1 to skip)"
   python3 scripts/sync_docs_sources.py
@@ -31,5 +35,4 @@ else
   echo "[run-tests] SKIP_DOCS is set; skipping docs sync and mkdocs build"
 fi
 
-# Run tests
-uv run pytest
+uv run --frozen pytest
