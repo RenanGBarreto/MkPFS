@@ -28,9 +28,11 @@ from .utils import _read_exact, ceil_div, human_readable_size, read_param_json
 def validate_d32_ranges(inodes: list[Inode], final_ndblock: int) -> None:
     """Validate values that will be serialized into 32-bit inode structures.
 
-    This check ensures no fields exceed the limits of signed/unsigned 32-bit
-    representations used in the legacy on-disk layout. It raises BuildError on
-    any overflow or invalid negative value encountered.
+    Matches legacy/ffpfs.py:validate_d32_ranges exactly:
+    - inode.number, .flags, .blocks must be in [0, UINT32_MAX]
+    - inode.mode, .nlink must be in [0, 0xFFFF]
+    - final_ndblock and all db/ib pointers must not exceed INT32_MAX
+      (they are stored as signed int32 on disk, -1 is the sentinel)
 
     Args:
         inodes: List of Inode objects to validate.
@@ -43,15 +45,15 @@ def validate_d32_ranges(inodes: list[Inode], final_ndblock: int) -> None:
         raise BuildError(f"Image requires block index {final_ndblock}, exceeds D32 pointer limit {consts.INT32_MAX}")
 
     for ino in inodes:
-        if not (0 <= ino.number <= consts.INT32_MAX):
+        if not (0 <= ino.number <= consts.UINT32_MAX):
             raise BuildError(f"Inode number {ino.number} out of uint32 range")
         if not (0 <= ino.mode <= 0xFFFF):
             raise BuildError(f"Inode mode {ino.mode} out of uint16 range")
         if not (0 <= ino.nlink <= 0xFFFF):
             raise BuildError(f"Inode nlink {ino.nlink} out of uint16 range")
-        if not (0 <= ino.flags <= consts.INT32_MAX):
+        if not (0 <= ino.flags <= consts.UINT32_MAX):
             raise BuildError(f"Inode flags {ino.flags} out of uint32 range")
-        if not (0 <= ino.blocks <= consts.INT32_MAX):
+        if not (0 <= ino.blocks <= consts.UINT32_MAX):
             raise BuildError(f"Inode blocks {ino.blocks} out of uint32 range")
 
         for ptr in ino.db:
